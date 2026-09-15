@@ -1,340 +1,644 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Smart Household Voltage Monitor</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f5f7;
-            text-align: center;
-            margin: 0;
-            padding: 30px;
-        }
+<title>Smart Household Voltage Monitor</title>
 
-        .container {
-            max-width: 950px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
+<style>
 
-        h1 {
-            color: #222;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .settings {
-            margin: 20px 0;
-        }
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #eef5ff, #f8fbff);
+    color: #222;
+}
 
-        label {
-            font-weight: bold;
-            margin: 10px;
-        }
+header {
+    background: #1f4e79;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
 
-        input {
-            padding: 10px;
-            width: 100px;
-            font-size: 16px;
-            border: 1px solid #aaa;
-            border-radius: 6px;
-        }
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
 
-        #voltage {
-            font-size: 42px;
-            font-weight: bold;
-            margin: 20px;
-        }
+header p {
+    margin-top: 8px;
+    font-size: 15px;
+}
 
-        .details {
-            font-size: 18px;
-            margin: 15px;
-        }
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 25px auto;
+}
 
-        button {
-            padding: 12px 22px;
-            margin: 8px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #333;
-            color: white;
-        }
+/* SETTINGS */
 
-        button:hover {
-            background: #555;
-        }
+.settings {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
 
-        canvas {
-            width: 100%;
-            max-width: 900px;
-            height: 450px;
-            border: 1px solid #ccc;
-            background: white;
-            margin-top: 20px;
-        }
+.settings h2 {
+    margin-top: 0;
+}
 
-        .info {
-            margin-top: 15px;
-            color: #555;
-        }
-    </style>
+.input-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.input-box {
+    flex: 1;
+    min-width: 200px;
+}
+
+.input-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.apply {
+    background: #1f4e79;
+    color: white;
+}
+
+.start {
+    background: #198754;
+    color: white;
+}
+
+.stop {
+    background: #dc3545;
+    color: white;
+}
+
+.reset {
+    background: #6c757d;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+/* HOUSE INFO */
+
+.house-info {
+    background: #e8f1fb;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* CARDS */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: #555;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f4e79;
+}
+
+.unit {
+    font-size: 14px;
+    color: #666;
+}
+
+/* GRAPH */
+
+.graph-container {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.graph-container h2 {
+    margin-top: 0;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+/* STATUS */
+
+.status {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.live {
+    color: #198754;
+}
+
+.stopped {
+    color: #dc3545;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 23px;
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
+<header>
+
+<h1>⚡ Smart Household Voltage Monitor</h1>
+
+<p>
+Real-Time Household Load and Voltage Simulation
+</p>
+
+</header>
+
+
 <div class="container">
 
-    <h1>⚡ Smart Household Voltage Monitor</h1>
 
-    <p>Real-Time Voltage Simulation</p>
+<!-- SETTINGS -->
 
-    <!-- HOUSE SETTINGS -->
+<div class="settings">
 
-    <div class="settings">
+<h2>🏠 Household Configuration</h2>
 
-        <label>🏠 Number of Rooms:</label>
+<div class="input-row">
 
-        <input
-            type="number"
-            id="rooms"
-            min="1"
-            max="20"
-            value="3"
-        >
+<div class="input-box">
 
-        <br><br>
+<label>Number of Rooms</label>
 
-        <label>👨‍👩‍👧‍👦 Number of People:</label>
-
-        <input
-            type="number"
-            id="people"
-            min="1"
-            max="20"
-            value="4"
-        >
-
-    </div>
-
-    <button onclick="applySettings()">
-        Apply Settings
-    </button>
-
-    <div class="details" id="houseInfo">
-        House: 3 Rooms | 4 People
-    </div>
-
-    <hr>
-
-    <div id="voltage">230.00 V</div>
-
-    <button onclick="startGraph()">
-        ▶ Start Monitoring
-    </button>
-
-    <button onclick="stopGraph()">
-        ⏸ Stop
-    </button>
-
-    <button onclick="resetGraph()">
-        ↻ Reset
-    </button>
-
-    <canvas id="graph" width="900" height="450"></canvas>
-
-    <div class="info">
-        X-Axis: Time (seconds) |
-        Y-Axis: Voltage (V)
-    </div>
+<input
+type="number"
+id="rooms"
+min="1"
+max="20"
+value="3"
+>
 
 </div>
 
 
+<div class="input-box">
+
+<label>Number of People</label>
+
+<input
+type="number"
+id="people"
+min="1"
+max="20"
+value="4"
+>
+
+</div>
+
+</div>
+
+
+<br>
+
+<button
+class="apply"
+onclick="applySettings()"
+>
+Apply Settings
+</button>
+
+
+<div
+class="house-info"
+id="houseInfo"
+>
+
+🏠 3 Rooms | 👨‍👩‍👧‍👦 4 People
+
+</div>
+
+</div>
+
+
+
+<!-- DATA CARDS -->
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>Current Voltage</h3>
+
+<div
+class="value"
+id="voltage"
+>
+230.00
+</div>
+
+<div class="unit">
+Volts (V)
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Average Voltage</h3>
+
+<div
+class="value"
+id="averageVoltage"
+>
+230.00
+</div>
+
+<div class="unit">
+Volts (V)
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Average Load</h3>
+
+<div
+class="value"
+id="averageLoad"
+>
+2.55
+</div>
+
+<div class="unit">
+Kilowatts (kW)
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Current Load</h3>
+
+<div
+class="value"
+id="currentLoad"
+>
+2.55
+</div>
+
+<div class="unit">
+Kilowatts (kW)
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- CONTROLS -->
+
+<div style="text-align:center; margin-bottom:20px;">
+
+<button
+class="start"
+onclick="startMonitoring()"
+>
+▶ Start Monitoring
+</button>
+
+
+<button
+class="stop"
+onclick="stopMonitoring()"
+>
+⏸ Stop
+</button>
+
+
+<button
+class="reset"
+onclick="resetMonitoring()"
+>
+↻ Reset
+</button>
+
+
+<div
+class="status stopped"
+id="status"
+>
+● Monitoring Stopped
+</div>
+
+</div>
+
+
+
+<!-- TIME -->
+
+<div
+style="
+background:white;
+padding:15px;
+border-radius:12px;
+text-align:center;
+margin-bottom:20px;
+box-shadow:0 4px 15px rgba(0,0,0,0.08);
+"
+>
+
+<h3 style="margin:5px;">
+⏱️ Live Monitoring Time
+</h3>
+
+<div
+id="timeDisplay"
+style="
+font-size:26px;
+font-weight:bold;
+color:#1f4e79;
+"
+>
+0 seconds
+</div>
+
+</div>
+
+
+
+<!-- GRAPH -->
+
+<div class="graph-container">
+
+<h2>
+📈 Real-Time Voltage vs Time
+</h2>
+
+<p>
+The graph displays the household voltage for the latest
+60 seconds.
+</p>
+
+
+<canvas
+id="graph"
+width="1100"
+height="500"
+>
+</canvas>
+
+</div>
+
+
+</div>
+
+
+
 <script>
 
-const canvas = document.getElementById("graph");
-const ctx = canvas.getContext("2d");
 
-let time = 0;
-let voltage = 230;
-let data = [];
-
-let running = false;
-let timer = null;
+// ============================================
+// VARIABLES
+// ============================================
 
 let rooms = 3;
+
 let people = 4;
 
+let averageLoad = 0;
 
-/* APPLY HOUSE SETTINGS */
+let currentLoad = 0;
 
-function applySettings() {
+let averageVoltage = 230;
 
-    rooms = parseInt(
-        document.getElementById("rooms").value
-    );
+let voltage = 230;
 
-    people = parseInt(
-        document.getElementById("people").value
-    );
+let elapsedSeconds = 0;
 
-    document.getElementById("houseInfo").innerHTML =
-        "🏠 House: " +
+let data = [];
+
+let timer = null;
+
+let running = false;
+
+
+// ============================================
+// CALCULATE HOUSEHOLD LOAD
+// ============================================
+
+function calculateHousehold() {
+
+
+    rooms =
+        parseInt(
+            document.getElementById("rooms").value
+        );
+
+
+    people =
+        parseInt(
+            document.getElementById("people").value
+        );
+
+
+    // Prevent invalid values
+
+    if (rooms < 1) rooms = 1;
+
+    if (people < 1) people = 1;
+
+
+    /*
+        Estimated household load.
+
+        More rooms = more appliances
+        More people = more usage
+
+        This is a SIMULATION, not an
+        actual electrical measurement.
+    */
+
+    averageLoad =
+        0.5 +
+        (rooms * 0.35) +
+        (people * 0.25);
+
+
+    currentLoad = averageLoad;
+
+
+    /*
+        Household supply remains around
+        230 V.
+
+        Higher load can produce a
+        small simulated voltage drop.
+    */
+
+    averageVoltage =
+        230 -
+        Math.min(
+            2.5,
+            averageLoad * 0.12
+        );
+
+
+    voltage = averageVoltage;
+
+
+    // Update display
+
+    document.getElementById(
+        "houseInfo"
+    ).innerHTML =
+        "🏠 " +
         rooms +
         " Rooms | 👨‍👩‍👧‍👦 " +
         people +
         " People";
 
-}
-
-
-/* START GRAPH */
-
-function startGraph() {
-
-    if (running)
-        return;
-
-    running = true;
-
-    timer = setInterval(
-        updateGraph,
-        1000
-    );
-
-}
-
-
-/* STOP GRAPH */
-
-function stopGraph() {
-
-    running = false;
-
-    clearInterval(timer);
-
-}
-
-
-/* RESET GRAPH */
-
-function resetGraph() {
-
-    stopGraph();
-
-    time = 0;
-
-    voltage = 230;
-
-    data = [];
 
     document.getElementById(
-        "voltage"
-    ).innerHTML = "230.00 V";
-
-    drawGraph();
-
-}
+        "averageLoad"
+    ).innerHTML =
+        averageLoad.toFixed(2);
 
 
-/* GENERATE REALISTIC VOLTAGE */
-
-function generateVoltage() {
-
-    /*
-    More rooms and more people
-    can create slightly higher
-    electrical activity.
-    */
-
-    let activity =
-        (rooms * 0.15) +
-        (people * 0.20);
+    document.getElementById(
+        "currentLoad"
+    ).innerHTML =
+        currentLoad.toFixed(2);
 
 
-    /* Normal voltage fluctuation */
-
-    let change =
-        (Math.random() - 0.5) *
-        (1 + activity * 0.1);
-
-
-    voltage += change;
-
-
-    /* Occasional load increase */
-
-    if (Math.random() < 0.08) {
-
-        voltage -=
-            Math.random() *
-            (2 + activity * 0.3);
-
-    }
-
-
-    /* Small voltage recovery */
-
-    if (Math.random() < 0.05) {
-
-        voltage +=
-            Math.random() *
-            1.5;
-
-    }
-
-
-    /* Keep realistic voltage range */
-
-    if (voltage > 240)
-        voltage = 240;
-
-    if (voltage < 220)
-        voltage = 220;
-
-
-    return voltage;
-
-}
-
-
-/* UPDATE GRAPH */
-
-function updateGraph() {
-
-    time++;
-
-    let newVoltage =
-        generateVoltage();
-
-
-    data.push({
-
-        time: time,
-
-        voltage: newVoltage
-
-    });
-
-
-    /* Show last 60 readings */
-
-    if (data.length > 60) {
-
-        data.shift();
-
-    }
+    document.getElementById(
+        "averageVoltage"
+    ).innerHTML =
+        averageVoltage.toFixed(2);
 
 
     document.getElementById(
         "voltage"
     ).innerHTML =
-        newVoltage.toFixed(2) +
-        " V";
+        voltage.toFixed(2);
+
+}
+
+
+
+// ============================================
+// APPLY SETTINGS
+// ============================================
+
+function applySettings() {
+
+
+    calculateHousehold();
+
+
+    // Reset graph
+
+    elapsedSeconds = 0;
+
+    data = [];
+
+
+    document.getElementById(
+        "timeDisplay"
+    ).innerHTML =
+        "0 seconds";
 
 
     drawGraph();
@@ -342,52 +646,389 @@ function updateGraph() {
 }
 
 
-/* DRAW GRAPH */
+
+// ============================================
+// GENERATE REALISTIC LOAD
+// ============================================
+
+function generateLoad() {
+
+
+    /*
+        Small random variation around
+        the calculated household average.
+    */
+
+    let variation =
+        (Math.random() - 0.5) * 0.6;
+
+
+    currentLoad =
+        averageLoad + variation;
+
+
+    /*
+        Occasionally simulate an appliance
+        switching ON.
+    */
+
+    if (Math.random() < 0.08) {
+
+        currentLoad +=
+            0.5 +
+            Math.random() * 1.2;
+
+    }
+
+
+    /*
+        Occasionally simulate appliances
+        switching OFF.
+    */
+
+    if (Math.random() < 0.05) {
+
+        currentLoad -=
+            0.3 +
+            Math.random() * 0.5;
+
+    }
+
+
+    if (currentLoad < 0.2) {
+
+        currentLoad = 0.2;
+
+    }
+
+
+    document.getElementById(
+        "currentLoad"
+    ).innerHTML =
+        currentLoad.toFixed(2);
+
+}
+
+
+
+// ============================================
+// GENERATE VOLTAGE
+// ============================================
+
+function generateVoltage() {
+
+
+    generateLoad();
+
+
+    /*
+        Load-related voltage effect
+    */
+
+    let loadEffect =
+        (currentLoad - averageLoad)
+        * 0.15;
+
+
+    /*
+        Natural small voltage fluctuation
+    */
+
+    let randomVariation =
+        (Math.random() - 0.5)
+        * 0.8;
+
+
+    voltage =
+        averageVoltage -
+        loadEffect +
+        randomVariation;
+
+
+    /*
+        Keep simulated household voltage
+        in realistic range.
+    */
+
+    voltage =
+        Math.max(
+            220,
+            Math.min(
+                240,
+                voltage
+            )
+        );
+
+
+    document.getElementById(
+        "voltage"
+    ).innerHTML =
+        voltage.toFixed(2);
+
+}
+
+
+
+// ============================================
+// START MONITORING
+// ============================================
+
+function startMonitoring() {
+
+
+    if (running) {
+
+        return;
+
+    }
+
+
+    running = true;
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+        "● Monitoring Live";
+
+
+    document.getElementById(
+        "status"
+    ).className =
+        "status live";
+
+
+    /*
+        Update every 1 second.
+    */
+
+    timer =
+        setInterval(
+            function() {
+
+
+                // Generate new values
+
+                generateVoltage();
+
+
+                // Increase REAL elapsed time
+
+                elapsedSeconds++;
+
+
+                /*
+                    Store time and voltage
+                */
+
+                data.push({
+
+                    time: elapsedSeconds,
+
+                    voltage: voltage
+
+                });
+
+
+                /*
+                    Keep only the latest
+                    60 seconds.
+                */
+
+                if (data.length > 60) {
+
+                    data.shift();
+
+                }
+
+
+                /*
+                    Update live time display
+                */
+
+                document.getElementById(
+                    "timeDisplay"
+                ).innerHTML =
+                    elapsedSeconds +
+                    " seconds";
+
+
+                /*
+                    Redraw graph
+                */
+
+                drawGraph();
+
+
+            },
+            1000
+        );
+
+}
+
+
+
+// ============================================
+// STOP MONITORING
+// ============================================
+
+function stopMonitoring() {
+
+
+    running = false;
+
+
+    clearInterval(timer);
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+        "● Monitoring Stopped";
+
+
+    document.getElementById(
+        "status"
+    ).className =
+        "status stopped";
+
+}
+
+
+
+// ============================================
+// RESET MONITORING
+// ============================================
+
+function resetMonitoring() {
+
+
+    stopMonitoring();
+
+
+    elapsedSeconds = 0;
+
+
+    data = [];
+
+
+    voltage = averageVoltage;
+
+
+    currentLoad = averageLoad;
+
+
+    document.getElementById(
+        "voltage"
+    ).innerHTML =
+        voltage.toFixed(2);
+
+
+    document.getElementById(
+        "currentLoad"
+    ).innerHTML =
+        currentLoad.toFixed(2);
+
+
+    document.getElementById(
+        "timeDisplay"
+    ).innerHTML =
+        "0 seconds";
+
+
+    drawGraph();
+
+}
+
+
+
+// ============================================
+// DRAW GRAPH
+// ============================================
 
 function drawGraph() {
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+
+    const canvas =
+        document.getElementById(
+            "graph"
+        );
+
+
+    const ctx =
+        canvas.getContext("2d");
 
 
     const width =
         canvas.width;
 
+
     const height =
         canvas.height;
 
 
-    const left = 70;
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    // Graph margins
+
+    const left = 75;
+
     const right = 30;
-    const top = 30;
-    const bottom = 60;
+
+    const top = 35;
+
+    const bottom = 70;
 
 
     const graphWidth =
-        width - left - right;
+        width -
+        left -
+        right;
+
 
     const graphHeight =
-        height - top - bottom;
+        height -
+        top -
+        bottom;
 
 
-    /* GRID */
+
+    // ========================================
+    // BACKGROUND
+    // ========================================
+
+    ctx.fillStyle = "#fafafa";
+
+    ctx.fillRect(
+        left,
+        top,
+        graphWidth,
+        graphHeight
+    );
+
+
+
+    // ========================================
+    // HORIZONTAL GRID
+    // ========================================
 
     ctx.strokeStyle = "#dddddd";
 
     ctx.lineWidth = 1;
 
 
-    /* Horizontal lines */
-
     for (
         let v = 220;
         v <= 240;
         v += 5
     ) {
+
 
         let y =
             top +
@@ -398,7 +1039,10 @@ function drawGraph() {
 
         ctx.beginPath();
 
-        ctx.moveTo(left, y);
+        ctx.moveTo(
+            left,
+            y
+        );
 
         ctx.lineTo(
             width - right,
@@ -408,151 +1052,162 @@ function drawGraph() {
         ctx.stroke();
 
 
+        // Y-axis value
+
         ctx.fillStyle = "#333";
 
         ctx.font =
-            "14px Arial";
-
-        ctx.textAlign =
-            "right";
+            "13px Arial";
 
 
         ctx.fillText(
             v + " V",
-            left - 10,
+            25,
             y + 5
         );
 
     }
 
 
-    /* Vertical grid */
 
-    for (
-        let i = 0;
-        i <= 6;
-        i++
-    ) {
+    // ========================================
+    // VERTICAL GRID
+    // ========================================
 
-        let x =
-            left +
-            (i / 6)
-            * graphWidth;
+    if (data.length > 1) {
 
 
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            top
-        );
-
-        ctx.lineTo(
-            x,
-            height - bottom
-        );
-
-        ctx.stroke();
+        let startTime =
+            data[0].time;
 
 
-        ctx.fillStyle =
-            "#333";
-
-        ctx.font =
-            "14px Arial";
-
-        ctx.textAlign =
-            "center";
+        let endTime =
+            data[data.length - 1].time;
 
 
-        let label =
+        let range =
             Math.max(
-                0,
-                time - 60 +
-                i * 10
+                1,
+                endTime - startTime
             );
 
 
-        ctx.fillText(
-            label + " s",
-            x,
-            height - bottom + 25
-        );
+        /*
+            Six time markers
+        */
+
+        for (
+            let i = 0;
+            i <= 6;
+            i++
+        ) {
+
+
+            let x =
+                left +
+                (i / 6)
+                * graphWidth;
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                x,
+                top
+            );
+
+            ctx.lineTo(
+                x,
+                top + graphHeight
+            );
+
+            ctx.stroke();
+
+
+            let t =
+                startTime +
+                (range / 6) * i;
+
+
+            ctx.fillStyle =
+                "#333";
+
+
+            ctx.font =
+                "13px Arial";
+
+
+            ctx.fillText(
+                Math.round(t) + "s",
+                x - 12,
+                height - 35
+            );
+
+        }
 
     }
 
 
-    /* AXES */
 
-    ctx.strokeStyle = "#222";
+    // ========================================
+    // AXES
+    // ========================================
+
+    ctx.strokeStyle =
+        "#222";
 
     ctx.lineWidth = 2;
 
 
-    /* Y-axis */
-
     ctx.beginPath();
+
 
     ctx.moveTo(
         left,
         top
     );
 
+
     ctx.lineTo(
         left,
-        height - bottom
+        top + graphHeight
     );
 
-    ctx.stroke();
-
-
-    /* X-axis */
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        left,
-        height - bottom
-    );
 
     ctx.lineTo(
         width - right,
-        height - bottom
+        top + graphHeight
     );
+
 
     ctx.stroke();
 
 
-    /* AXIS LABELS */
 
-    ctx.fillStyle =
-        "#222";
-
-    ctx.font =
-        "bold 16px Arial";
-
-
-    ctx.textAlign =
-        "center";
-
-
-    ctx.fillText(
-        "Time (seconds)",
-        width / 2,
-        height - 15
-    );
-
+    // ========================================
+    // Y AXIS LABEL
+    // ========================================
 
     ctx.save();
 
+
     ctx.translate(
-        20,
+        18,
         height / 2
     );
+
 
     ctx.rotate(
         -Math.PI / 2
     );
+
+
+    ctx.fillStyle =
+        "#222";
+
+
+    ctx.font =
+        "bold 15px Arial";
 
 
     ctx.fillText(
@@ -565,10 +1220,58 @@ function drawGraph() {
     ctx.restore();
 
 
-    /* DRAW VOLTAGE GRAPH */
 
-    if (data.length < 2)
+    // ========================================
+    // X AXIS LABEL
+    // ========================================
+
+    ctx.fillStyle =
+        "#222";
+
+
+    ctx.font =
+        "bold 15px Arial";
+
+
+    ctx.fillText(
+        "Live Time (seconds)",
+        width / 2 - 65,
+        height - 8
+    );
+
+
+
+    // ========================================
+    // GRAPH LINE
+    // ========================================
+
+    if (data.length < 2) {
+
         return;
+
+    }
+
+
+    let startTime =
+        data[0].time;
+
+
+    let endTime =
+        data[data.length - 1].time;
+
+
+    let range =
+        Math.max(
+            1,
+            endTime - startTime
+        );
+
+
+    ctx.strokeStyle =
+        "#007bff";
+
+
+    ctx.lineWidth = 3;
 
 
     ctx.beginPath();
@@ -577,18 +1280,23 @@ function drawGraph() {
     data.forEach(
         function(point, index) {
 
+
             let x =
                 left +
-                (index /
-                (data.length - 1))
+                (
+                    (point.time - startTime)
+                    / range
+                )
                 * graphWidth;
 
 
             let y =
                 top +
                 graphHeight -
-                ((point.voltage - 220)
-                / 20)
+                (
+                    (point.voltage - 220)
+                    / 20
+                )
                 * graphHeight;
 
 
@@ -614,21 +1322,70 @@ function drawGraph() {
     );
 
 
-    ctx.strokeStyle =
-        "#0077cc";
-
-    ctx.lineWidth = 3;
-
     ctx.stroke();
+
+
+
+    // ========================================
+    // CURRENT DATA POINT
+    // ========================================
+
+    let last =
+        data[data.length - 1];
+
+
+    let lastX =
+        left +
+        (
+            (last.time - startTime)
+            / range
+        )
+        * graphWidth;
+
+
+    let lastY =
+        top +
+        graphHeight -
+        (
+            (last.voltage - 220)
+            / 20
+        )
+        * graphHeight;
+
+
+    ctx.fillStyle =
+        "#007bff";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        lastX,
+        lastY,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fill();
 
 }
 
 
-/* INITIAL GRAPH */
+
+// ============================================
+// INITIALIZE
+// ============================================
+
+calculateHousehold();
 
 drawGraph();
 
 </script>
 
+
 </body>
+
 </html>
