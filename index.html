@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Display</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 150px;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #time {
+            font-size: 35px;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🕐 Current Time</h1>
+
+    <button onclick="showTime()">Click to Show Time</button>
+
+    <div id="time"></div>
+
+    <script>
+        function showTime() {
+            let now = new Date();
+
+            let time = now.toLocaleTimeString();
+
+            document.getElementById("time").innerHTML = time;
+        }
+    </script>
+
+</body>
+</html>
