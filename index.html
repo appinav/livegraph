@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Household Voltage Monitor</title>
+    <title>Smart Household Voltage Monitor</title>
 
     <style>
         body {
@@ -10,10 +10,6 @@
             text-align: center;
             margin: 0;
             padding: 30px;
-        }
-
-        h1 {
-            color: #222;
         }
 
         .container {
@@ -25,16 +21,42 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
+        h1 {
+            color: #222;
+        }
+
+        .settings {
+            margin: 20px 0;
+        }
+
+        label {
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        input {
+            padding: 10px;
+            width: 100px;
+            font-size: 16px;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+        }
+
         #voltage {
             font-size: 42px;
             font-weight: bold;
             margin: 20px;
         }
 
+        .details {
+            font-size: 18px;
+            margin: 15px;
+        }
+
         button {
-            padding: 12px 25px;
+            padding: 12px 22px;
             margin: 8px;
-            font-size: 17px;
+            font-size: 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -57,7 +79,6 @@
 
         .info {
             margin-top: 15px;
-            font-size: 16px;
             color: #555;
         }
     </style>
@@ -67,332 +88,545 @@
 
 <div class="container">
 
-    <h1>⚡ Household Voltage Monitor</h1>
+    <h1>⚡ Smart Household Voltage Monitor</h1>
 
-    <p>
-        Real-Time Voltage Monitoring for a 4-Person Household
-    </p>
+    <p>Real-Time Voltage Simulation</p>
+
+    <!-- HOUSE SETTINGS -->
+
+    <div class="settings">
+
+        <label>🏠 Number of Rooms:</label>
+
+        <input
+            type="number"
+            id="rooms"
+            min="1"
+            max="20"
+            value="3"
+        >
+
+        <br><br>
+
+        <label>👨‍👩‍👧‍👦 Number of People:</label>
+
+        <input
+            type="number"
+            id="people"
+            min="1"
+            max="20"
+            value="4"
+        >
+
+    </div>
+
+    <button onclick="applySettings()">
+        Apply Settings
+    </button>
+
+    <div class="details" id="houseInfo">
+        House: 3 Rooms | 4 People
+    </div>
+
+    <hr>
 
     <div id="voltage">230.00 V</div>
 
-    <button onclick="startGraph()">▶ Start</button>
-    <button onclick="stopGraph()">⏸ Stop</button>
-    <button onclick="resetGraph()">↻ Reset</button>
+    <button onclick="startGraph()">
+        ▶ Start Monitoring
+    </button>
+
+    <button onclick="stopGraph()">
+        ⏸ Stop
+    </button>
+
+    <button onclick="resetGraph()">
+        ↻ Reset
+    </button>
 
     <canvas id="graph" width="900" height="450"></canvas>
 
     <div class="info">
-        X-Axis: Time (seconds) &nbsp;&nbsp; | &nbsp;&nbsp;
+        X-Axis: Time (seconds) |
         Y-Axis: Voltage (V)
     </div>
 
 </div>
 
+
 <script>
 
-    const canvas = document.getElementById("graph");
-    const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
 
-    let time = 0;
-    let voltage = 230;
-    let data = [];
-    let running = false;
-    let timer = null;
+let time = 0;
+let voltage = 230;
+let data = [];
 
-    // Start the real-time graph
-    function startGraph() {
+let running = false;
+let timer = null;
 
-        if (running)
-            return;
+let rooms = 3;
+let people = 4;
 
-        running = true;
 
-        timer = setInterval(updateGraph, 1000);
+/* APPLY HOUSE SETTINGS */
+
+function applySettings() {
+
+    rooms = parseInt(
+        document.getElementById("rooms").value
+    );
+
+    people = parseInt(
+        document.getElementById("people").value
+    );
+
+    document.getElementById("houseInfo").innerHTML =
+        "🏠 House: " +
+        rooms +
+        " Rooms | 👨‍👩‍👧‍👦 " +
+        people +
+        " People";
+
+}
+
+
+/* START GRAPH */
+
+function startGraph() {
+
+    if (running)
+        return;
+
+    running = true;
+
+    timer = setInterval(
+        updateGraph,
+        1000
+    );
+
+}
+
+
+/* STOP GRAPH */
+
+function stopGraph() {
+
+    running = false;
+
+    clearInterval(timer);
+
+}
+
+
+/* RESET GRAPH */
+
+function resetGraph() {
+
+    stopGraph();
+
+    time = 0;
+
+    voltage = 230;
+
+    data = [];
+
+    document.getElementById(
+        "voltage"
+    ).innerHTML = "230.00 V";
+
+    drawGraph();
+
+}
+
+
+/* GENERATE REALISTIC VOLTAGE */
+
+function generateVoltage() {
+
+    /*
+    More rooms and more people
+    can create slightly higher
+    electrical activity.
+    */
+
+    let activity =
+        (rooms * 0.15) +
+        (people * 0.20);
+
+
+    /* Normal voltage fluctuation */
+
+    let change =
+        (Math.random() - 0.5) *
+        (1 + activity * 0.1);
+
+
+    voltage += change;
+
+
+    /* Occasional load increase */
+
+    if (Math.random() < 0.08) {
+
+        voltage -=
+            Math.random() *
+            (2 + activity * 0.3);
+
     }
 
-    // Stop graph
-    function stopGraph() {
 
-        running = false;
+    /* Small voltage recovery */
 
-        clearInterval(timer);
+    if (Math.random() < 0.05) {
+
+        voltage +=
+            Math.random() *
+            1.5;
+
     }
 
-    // Reset graph
-    function resetGraph() {
 
-        stopGraph();
+    /* Keep realistic voltage range */
 
-        time = 0;
-        voltage = 230;
-        data = [];
+    if (voltage > 240)
+        voltage = 240;
 
-        document.getElementById("voltage").innerHTML =
-            "230.00 V";
+    if (voltage < 220)
+        voltage = 220;
 
-        drawGraph();
+
+    return voltage;
+
+}
+
+
+/* UPDATE GRAPH */
+
+function updateGraph() {
+
+    time++;
+
+    let newVoltage =
+        generateVoltage();
+
+
+    data.push({
+
+        time: time,
+
+        voltage: newVoltage
+
+    });
+
+
+    /* Show last 60 readings */
+
+    if (data.length > 60) {
+
+        data.shift();
+
     }
 
-    // Generate realistic household voltage
-    function generateVoltage() {
 
-        // Small normal variation
-        let change = (Math.random() - 0.5) * 1.2;
+    document.getElementById(
+        "voltage"
+    ).innerHTML =
+        newVoltage.toFixed(2) +
+        " V";
 
-        voltage = voltage + change;
 
-        // Occasionally simulate a small household load change
-        if (Math.random() < 0.08) {
+    drawGraph();
 
-            voltage = voltage - (Math.random() * 3);
-        }
+}
 
-        // Occasionally simulate a small rise
-        if (Math.random() < 0.05) {
 
-            voltage = voltage + (Math.random() * 2);
-        }
+/* DRAW GRAPH */
 
-        // Keep voltage within realistic household limits
-        if (voltage > 235)
-            voltage = 235;
+function drawGraph() {
 
-        if (voltage < 225)
-            voltage = 225;
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-        return voltage;
-    }
 
-    // Update graph every second
-    function updateGraph() {
+    const width =
+        canvas.width;
 
-        time++;
+    const height =
+        canvas.height;
 
-        let newVoltage = generateVoltage();
 
-        data.push({
-            time: time,
-            voltage: newVoltage
-        });
+    const left = 70;
+    const right = 30;
+    const top = 30;
+    const bottom = 60;
 
-        // Keep last 60 seconds visible
-        if (data.length > 60) {
-            data.shift();
-        }
 
-        document.getElementById("voltage").innerHTML =
-            newVoltage.toFixed(2) + " V";
+    const graphWidth =
+        width - left - right;
 
-        drawGraph();
-    }
+    const graphHeight =
+        height - top - bottom;
 
-    // Draw graph
-    function drawGraph() {
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /* GRID */
 
-        const width = canvas.width;
-        const height = canvas.height;
+    ctx.strokeStyle = "#dddddd";
 
-        const left = 70;
-        const right = 30;
-        const top = 30;
-        const bottom = 60;
+    ctx.lineWidth = 1;
 
-        const graphWidth = width - left - right;
-        const graphHeight = height - top - bottom;
 
-        // -------------------------
-        // Background
-        // -------------------------
+    /* Horizontal lines */
 
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, width, height);
+    for (
+        let v = 220;
+        v <= 240;
+        v += 5
+    ) {
 
-        // -------------------------
-        // Grid
-        // -------------------------
+        let y =
+            top +
+            graphHeight -
+            ((v - 220) / 20)
+            * graphHeight;
 
-        ctx.strokeStyle = "#dddddd";
-        ctx.lineWidth = 1;
 
-        // Horizontal grid
-        for (let v = 225; v <= 235; v += 2) {
-
-            let y = top +
-                graphHeight -
-                ((v - 225) / 10) * graphHeight;
-
-            ctx.beginPath();
-            ctx.moveTo(left, y);
-            ctx.lineTo(width - right, y);
-            ctx.stroke();
-
-            // Y-axis labels
-            ctx.fillStyle = "#333";
-            ctx.font = "14px Arial";
-            ctx.textAlign = "right";
-
-            ctx.fillText(
-                v + " V",
-                left - 10,
-                y + 5
-            );
-        }
-
-        // Vertical grid
-        for (let i = 0; i <= 6; i++) {
-
-            let x = left +
-                (i / 6) * graphWidth;
-
-            ctx.beginPath();
-            ctx.moveTo(x, top);
-            ctx.lineTo(x, height - bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "#333";
-            ctx.font = "14px Arial";
-            ctx.textAlign = "center";
-
-            let label;
-
-            if (data.length > 0) {
-                label = Math.max(
-                    0,
-                    time - 60 + i * 10
-                );
-            } else {
-                label = i * 10;
-            }
-
-            ctx.fillText(
-                label + " s",
-                x,
-                height - bottom + 25
-            );
-        }
-
-        // -------------------------
-        // Axes
-        // -------------------------
-
-        ctx.strokeStyle = "#222";
-        ctx.lineWidth = 2;
-
-        // Y axis
         ctx.beginPath();
-        ctx.moveTo(left, top);
-        ctx.lineTo(left, height - bottom);
-        ctx.stroke();
 
-        // X axis
-        ctx.beginPath();
-        ctx.moveTo(left, height - bottom);
-        ctx.lineTo(width - right, height - bottom);
-        ctx.stroke();
+        ctx.moveTo(left, y);
 
-        // -------------------------
-        // Axis titles
-        // -------------------------
-
-        ctx.fillStyle = "#222";
-        ctx.font = "bold 16px Arial";
-
-        ctx.textAlign = "center";
-
-        ctx.fillText(
-            "Time (seconds)",
-            width / 2,
-            height - 15
+        ctx.lineTo(
+            width - right,
+            y
         );
 
-        ctx.save();
+        ctx.stroke();
 
-        ctx.translate(18, height / 2);
-        ctx.rotate(-Math.PI / 2);
+
+        ctx.fillStyle = "#333";
+
+        ctx.font =
+            "14px Arial";
+
+        ctx.textAlign =
+            "right";
+
 
         ctx.fillText(
-            "Voltage (V)",
-            0,
-            0
+            v + " V",
+            left - 10,
+            y + 5
         );
 
-        ctx.restore();
+    }
 
-        // -------------------------
-        // Draw voltage line
-        // -------------------------
 
-        if (data.length < 2)
-            return;
+    /* Vertical grid */
+
+    for (
+        let i = 0;
+        i <= 6;
+        i++
+    ) {
+
+        let x =
+            left +
+            (i / 6)
+            * graphWidth;
+
 
         ctx.beginPath();
 
-        data.forEach((point, index) => {
+        ctx.moveTo(
+            x,
+            top
+        );
 
-            let x;
+        ctx.lineTo(
+            x,
+            height - bottom
+        );
 
-            if (data.length === 1) {
+        ctx.stroke();
 
-                x = left;
 
-            } else {
+        ctx.fillStyle =
+            "#333";
 
-                x =
-                    left +
-                    (index / (data.length - 1))
-                    * graphWidth;
-            }
+        ctx.font =
+            "14px Arial";
+
+        ctx.textAlign =
+            "center";
+
+
+        let label =
+            Math.max(
+                0,
+                time - 60 +
+                i * 10
+            );
+
+
+        ctx.fillText(
+            label + " s",
+            x,
+            height - bottom + 25
+        );
+
+    }
+
+
+    /* AXES */
+
+    ctx.strokeStyle = "#222";
+
+    ctx.lineWidth = 2;
+
+
+    /* Y-axis */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        top
+    );
+
+    ctx.lineTo(
+        left,
+        height - bottom
+    );
+
+    ctx.stroke();
+
+
+    /* X-axis */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        height - bottom
+    );
+
+    ctx.lineTo(
+        width - right,
+        height - bottom
+    );
+
+    ctx.stroke();
+
+
+    /* AXIS LABELS */
+
+    ctx.fillStyle =
+        "#222";
+
+    ctx.font =
+        "bold 16px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+        "Time (seconds)",
+        width / 2,
+        height - 15
+    );
+
+
+    ctx.save();
+
+    ctx.translate(
+        20,
+        height / 2
+    );
+
+    ctx.rotate(
+        -Math.PI / 2
+    );
+
+
+    ctx.fillText(
+        "Voltage (V)",
+        0,
+        0
+    );
+
+
+    ctx.restore();
+
+
+    /* DRAW VOLTAGE GRAPH */
+
+    if (data.length < 2)
+        return;
+
+
+    ctx.beginPath();
+
+
+    data.forEach(
+        function(point, index) {
+
+            let x =
+                left +
+                (index /
+                (data.length - 1))
+                * graphWidth;
+
 
             let y =
                 top +
                 graphHeight -
-                ((point.voltage - 225) / 10)
+                ((point.voltage - 220)
+                / 20)
                 * graphHeight;
 
+
             if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
             }
 
-        });
+            else {
 
-        ctx.strokeStyle = "#1f77b4";
-        ctx.lineWidth = 3;
-        ctx.stroke();
+                ctx.lineTo(
+                    x,
+                    y
+                );
 
-        // -------------------------
-        // Draw latest point
-        // -------------------------
+            }
 
-        let last = data[data.length - 1];
+        }
+    );
 
-        let lastX = width - right;
 
-        let lastY =
-            top +
-            graphHeight -
-            ((last.voltage - 225) / 10)
-            * graphHeight;
+    ctx.strokeStyle =
+        "#0077cc";
 
-        ctx.beginPath();
+    ctx.lineWidth = 3;
 
-        ctx.arc(
-            lastX,
-            lastY,
-            5,
-            0,
-            Math.PI * 2
-        );
+    ctx.stroke();
 
-        ctx.fillStyle = "#1f77b4";
-        ctx.fill();
-    }
+}
 
-    // Draw initial empty graph
-    drawGraph();
+
+/* INITIAL GRAPH */
+
+drawGraph();
 
 </script>
 
