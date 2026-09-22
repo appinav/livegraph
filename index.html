@@ -1,706 +1,1180 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="description"
-content="A browser-based simulation of household voltage and estimated electrical load.">
-
-<meta name="referrer" content="strict-origin-when-cross-origin">
-
-<meta http-equiv="Content-Security-Policy"
-content="default-src 'self';
-script-src 'self' 'unsafe-inline';
-style-src 'self' 'unsafe-inline';
-img-src 'self' data:;
-font-src 'self';
-connect-src 'none';
-frame-src 'none';
-object-src 'none';
-base-uri 'self';
-form-action 'self';
-upgrade-insecure-requests">
-
-<title>Household Voltage Monitor</title>
-
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: auto;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f7fa;
-    color: #20242a;
-    line-height: 1.5;
-}
-
-/* HEADER */
-
-header {
-    background: #173b63;
-    color: white;
-    padding: 28px 16px;
-    border-bottom: 4px solid #0e2a47;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 30px;
-}
-
-header p {
-    margin: 7px 0 0;
-    font-size: 15px;
-}
-
-/* MAIN */
-
-.container {
-    width: 94%;
-    max-width: 1150px;
-    margin: 24px auto;
-}
-
-/* SECTIONS */
-
-section {
-    background: white;
-    border: 1px solid #d7dde5;
-    border-radius: 6px;
-    padding: 22px;
-    margin-bottom: 20px;
-}
-
-h2 {
-    margin: 0 0 14px;
-    font-size: 22px;
-}
-
-h3 {
-    margin: 0 0 8px;
-    font-size: 16px;
-}
-
-/* NOTICE */
-
-.notice {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    padding: 12px;
-    margin: 14px 0;
-}
-
-/* INPUTS */
-
-.input-row {
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-}
-
-.input-box {
-    flex: 1;
-    min-width: 210px;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 6px;
-}
-
-input {
-    width: 100%;
-    padding: 11px;
-    border: 2px solid #aeb8c4;
-    border-radius: 4px;
-    font-size: 16px;
-    background: white;
-    color: #20242a;
-}
-
-/* ACCESSIBILITY */
-
-input:focus,
-button:focus,
-a:focus {
-    outline: 3px solid #f2b705;
-    outline-offset: 2px;
-}
-
-/* BUTTONS */
-
-button {
-    border: 2px solid transparent;
-    border-radius: 4px;
-    padding: 11px 17px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: bold;
-    margin: 4px;
-    background: #173b63;
-    color: white;
-}
-
-button:hover {
-    background: #0e2a47;
-}
-
-.start {
-    background: #176b3a;
-}
-
-.start:hover {
-    background: #0f542c;
-}
-
-.stop {
-    background: #9b1c1c;
-}
-
-.stop:hover {
-    background: #7d1515;
-}
-
-.reset {
-    background: #4b5563;
-}
-
-.reset:hover {
-    background: #374151;
-}
-
-/* HOUSE INFORMATION */
-
-.house-info {
-    background: #edf3f8;
-    border-left: 4px solid #173b63;
-    padding: 12px;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-/* DATA CARDS */
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
-}
-
-.card {
-    background: white;
-    border: 1px solid #d7dde5;
-    border-radius: 6px;
-    padding: 18px;
-    text-align: center;
-}
-
-.card h3 {
-    color: #4b5563;
-}
-
-.value {
-    font-size: 27px;
-    font-weight: bold;
-    color: #173b63;
-}
-
-.unit {
-    font-size: 14px;
-    color: #59636e;
-}
-
-/* CONTROLS */
-
-.controls {
-    text-align: center;
-}
-
-.status {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 7px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.status.stopped {
-    background: #eef0f2;
-    color: #343a40;
-}
-
-.status.running {
-    background: #e4f4eb;
-    color: #155b32;
-}
-
-/* TIME */
-
-.time-box {
-    text-align: center;
-}
-
-.time-value {
-    font-size: 26px;
-    font-weight: bold;
-    color: #173b63;
-}
-
-/* GRAPH */
-
-.graph-wrap {
-    overflow-x: auto;
-}
-
-canvas {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: 1px solid #d7dde5;
-    background: white;
-}
-
-.graph-summary {
-    margin: 12px 0 0;
-    padding: 10px;
-    background: #f8fafc;
-    border: 1px solid #d7dde5;
-}
-
-.small {
-    font-size: 13px;
-    color: #5c6670;
-}
-
-/* FOOTER */
-
-footer {
-    background: #173b63;
-    color: white;
-    padding: 20px 16px;
-    text-align: center;
-    margin-top: 30px;
-}
-
-footer a {
-    color: white;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-/* MOBILE */
-
-@media (max-width: 850px) {
-
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
-
-@media (max-width: 520px) {
-
-    .cards {
-        grid-template-columns: 1fr;
-    }
-
-    header h1 {
-        font-size: 25px;
-    }
-
-    section {
-        padding: 17px;
-    }
-
-    .container {
-        width: 96%;
-    }
-
-}
-
-/* REDUCED MOTION */
-
-@media (prefers-reduced-motion: reduce) {
-
-    * {
-        scroll-behavior: auto !important;
-    }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Smart Household Voltage Monitor for estimating household electrical load and simulated voltage variation."
+    >
+
+    <meta
+        name="referrer"
+        content="strict-origin-when-cross-origin"
+    >
+
+    <!--
+        Content Security Policy for this static page.
+        If you later move JavaScript and CSS into separate files,
+        remove 'unsafe-inline' and use stricter CSP rules.
+    -->
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="
+            default-src 'self';
+            script-src 'self' 'unsafe-inline';
+            style-src 'self' 'unsafe-inline';
+            img-src 'self' data:;
+            font-src 'self';
+            connect-src 'none';
+            frame-src 'none';
+            object-src 'none';
+            base-uri 'self';
+            form-action 'self';
+            upgrade-insecure-requests
+        "
+    >
+
+    <!-- Site favicon -->
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230b63ce'/%3E%3Cpath d='M36 7 17 35h13l-3 22 20-30H34z' fill='white'/%3E%3C/svg%3E"
+    >
+
+    <title>Smart Household Voltage Monitor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #0759b5;
+        }
+
+        a:focus,
+        button:focus,
+        input:focus,
+        select:focus {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        header {
+            background: #0b63ce;
+            color: white;
+            padding: 28px 20px;
+            border-bottom: 4px solid #084d9f;
+        }
+
+        .header-inner {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        header h1 {
+            margin: 0 0 6px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        main {
+            max-width: 1150px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #d9e2ec;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #123b67;
+            font-size: 22px;
+        }
+
+        .card h3 {
+            color: #123b67;
+        }
+
+        .notice {
+            background: #eef6ff;
+            border-left: 4px solid #0b63ce;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+
+        .warning {
+            background: #fff8e6;
+            border-left: 4px solid #d28b00;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-weight: 700;
+            color: #243b53;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #aebdcc;
+            border-radius: 6px;
+            background: white;
+            color: #111827;
+            font-size: 15px;
+        }
+
+        button {
+            border: 1px solid #0759b5;
+            border-radius: 6px;
+            padding: 11px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #0b63ce;
+            color: white;
+        }
+
+        button:hover {
+            background: #084d9f;
+        }
+
+        button.secondary {
+            background: #eef4fb;
+            color: #174a7c;
+            border-color: #9bb6d1;
+        }
+
+        button.secondary:hover {
+            background: #dfeaf5;
+        }
+
+        button.danger {
+            background: #b42318;
+            border-color: #981b12;
+        }
+
+        button.danger:hover {
+            background: #8f1a12;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .house-info {
+            margin-top: 18px;
+            padding: 14px;
+            background: #f7f9fc;
+            border: 1px solid #dce5ee;
+            border-radius: 6px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .data-card {
+            border: 1px solid #d9e2ec;
+            background: #f9fbfd;
+            padding: 18px;
+            border-radius: 7px;
+        }
+
+        .data-label {
+            color: #52606d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 25px;
+            font-weight: 700;
+            color: #123b67;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th,
+        td {
+            border: 1px solid #d7e0e8;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #edf3f8;
+            color: #17324d;
+        }
+
+        tr:nth-child(even) {
+            background: #fafcfe;
+        }
+
+        .priority-high {
+            font-weight: 700;
+            color: #a61b1b;
+        }
+
+        .priority-medium {
+            font-weight: 700;
+            color: #9a6700;
+        }
+
+        .priority-low {
+            font-weight: 700;
+            color: #176b3a;
+        }
+
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .total-box {
+            background: #f4f8fc;
+            border: 1px solid #d8e3ed;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .total-box strong {
+            display: block;
+            color: #123b67;
+            font-size: 20px;
+            margin-top: 4px;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #eef2f6;
+            color: #334e68;
+            font-weight: 700;
+        }
+
+        .status.live {
+            background: #e7f6ec;
+            color: #176b3a;
+        }
+
+        .status.stopped {
+            background: #f4f4f4;
+            color: #555;
+        }
+
+        .graph-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 1100px;
+            height: auto;
+            border: 1px solid #cbd5df;
+            background: white;
+        }
+
+        .graph-summary {
+            margin-top: 12px;
+            background: #f7f9fc;
+            padding: 12px;
+            border: 1px solid #dce5ee;
+            border-radius: 6px;
+        }
+
+        .legal-section {
+            scroll-margin-top: 20px;
+        }
+
+        footer {
+            background: #102a43;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 40px;
+        }
+
+        .footer-inner {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        footer a {
+            color: white;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #52606d;
+        }
+
+        footer .small {
+            color: #d9e2ec;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .data-grid,
+            .totals-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .equipment-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            main {
+                padding: 0 12px;
+            }
+
+            .form-grid,
+            .equipment-grid,
+            .data-grid,
+            .totals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-
-<h1>Household Voltage Monitor</h1>
-
-<p>
-Browser-based simulation of voltage and estimated household load
-</p>
-
+    <div class="header-inner">
+        <h1>Smart Household Voltage Monitor</h1>
+        <p>Household electrical load and simulated voltage monitoring</p>
+    </div>
 </header>
 
+<main>
+
+    <!-- HOME -->
+    <section class="card" id="home">
+        <h2>Household Configuration</h2>
+
+        <div class="notice">
+            This website is a simulation and demonstration tool. It does not directly
+            measure mains voltage, electrical current, electricity consumption, or
+            utility meter readings.
+        </div>
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label for="rooms">Number of Rooms</label>
+                <input
+                    type="number"
+                    id="rooms"
+                    min="1"
+                    max="20"
+                    value="3"
+                    inputmode="numeric"
+                >
+            </div>
+
+            <div class="field">
+                <label for="people">Number of People</label>
+                <input
+                    type="number"
+                    id="people"
+                    min="1"
+                    max="20"
+                    value="4"
+                    inputmode="numeric"
+                >
+            </div>
+
+        </div>
+
+        <div class="button-row">
+            <button type="button" onclick="applyHouseholdSettings()">
+                Apply Household Settings
+            </button>
+        </div>
+
+        <div class="house-info" id="houseInfo">
+            Household: 3 rooms and 4 people
+        </div>
+    </section>
+
+
+    <!-- EQUIPMENT -->
+    <section class="card" id="equipment-section">
+
+        <h2>Room Equipment</h2>
+
+        <p>
+            Select equipment for a room and enter its estimated power consumption
+            and daily usage time.
+        </p>
+
+        <div class="equipment-grid">
+
+            <div class="field">
+                <label for="equipmentRoom">Room</label>
+
+                <select id="equipmentRoom">
+                    <option value="Living Room">Living Room</option>
+                    <option value="Bedroom 1">Bedroom 1</option>
+                    <option value="Bedroom 2">Bedroom 2</option>
+                    <option value="Bedroom 3">Bedroom 3</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Bathroom">Bathroom</option>
+                    <option value="Study Room">Study Room</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="equipmentType">Equipment</label>
+
+                <select id="equipmentType" onchange="handleEquipmentChange()">
+                    <option value="AC">Air Conditioner</option>
+                    <option value="Fan">Fan</option>
+                    <option value="Light">Light</option>
+                    <option value="TV">Television</option>
+                    <option value="Refrigerator">Refrigerator</option>
+                    <option value="Iron Box">Iron Box</option>
+                    <option value="Washing Machine">Washing Machine</option>
+                    <option value="Computer">Computer</option>
+                    <option value="Water Heater">Water Heater</option>
+                    <option value="Microwave">Microwave</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="priority">Priority</label>
+
+                <select id="priority">
+                    <option value="High">High</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+
+            <div
+                class="field hidden"
+                id="customEquipmentContainer"
+            >
+                <label for="customEquipment">Equipment Name</label>
+
+                <input
+                    type="text"
+                    id="customEquipment"
+                    maxlength="50"
+                    placeholder="Example: Water Pump"
+                >
+            </div>
+
+            <div class="field">
+                <label for="power">Power Consumption (W)</label>
+
+                <input
+                    type="number"
+                    id="power"
+                    min="1"
+                    max="10000"
+                    step="1"
+                    value="1500"
+                    inputmode="numeric"
+                >
+            </div>
+
+            <div class="field">
+                <label for="usageTime">Usage Time (hours/day)</label>
+
+                <input
+                    type="number"
+                    id="usageTime"
+                    min="0"
+                    max="24"
+                    step="0.1"
+                    value="6"
+                    inputmode="decimal"
+                >
+            </div>
+
+        </div>
+
+        <div class="button-row">
+            <button type="button" onclick="addEquipment()">
+                Add Equipment
+            </button>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+                <caption class="small">
+                    Equipment configured for the household
+                </caption>
+
+                <thead>
+                    <tr>
+                        <th>Room</th>
+                        <th>Equipment</th>
+                        <th>Priority</th>
+                        <th>Power</th>
+                        <th>Time/Day</th>
+                        <th>Energy/Day</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="equipmentTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="totals-grid">
+
+            <div class="total-box">
+                Total Connected Load
+                <strong id="totalPower">0 W</strong>
+            </div>
+
+            <div class="total-box">
+                Estimated Daily Energy
+                <strong id="dailyEnergy">0 kWh</strong>
+            </div>
+
+            <div class="total-box">
+                Estimated Monthly Energy
+                <strong id="monthlyEnergy">0 kWh</strong>
+            </div>
+
+            <div class="total-box">
+                Estimated Voltage
+                <strong id="equipmentVoltage">230.0 V</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MONITORING -->
+    <section class="card">
+
+        <h2>Voltage Monitoring</h2>
+
+        <div class="data-grid">
+
+            <div class="data-card">
+                <div class="data-label">Current Voltage</div>
+                <div
+                    class="data-value"
+                    id="voltage"
+                    aria-live="polite"
+                >
+                    230.0 V
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-label">Estimated Average Voltage</div>
+                <div
+                    class="data-value"
+                    id="averageVoltage"
+                >
+                    230.0 V
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-label">Estimated Average Load</div>
+                <div
+                    class="data-value"
+                    id="averageLoad"
+                >
+                    0.0 kW
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-label">Current Load</div>
+                <div
+                    class="data-value"
+                    id="currentLoad"
+                    aria-live="polite"
+                >
+                    0.0 kW
+                </div>
+            </div>
+
+        </div>
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                onclick="startMonitoring()"
+            >
+                Start Monitoring
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="stopMonitoring()"
+            >
+                Stop Monitoring
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="resetMonitoring()"
+            >
+                Reset Monitoring
+            </button>
+
+        </div>
+
+        <div
+            id="status"
+            class="status stopped"
+            role="status"
+            aria-live="polite"
+        >
+            Monitoring stopped
+        </div>
+
+    </section>
+
+
+    <!-- GRAPH -->
+    <section class="card">
+
+        <h2>Real-Time Voltage vs Time</h2>
+
+        <p>
+            The graph displays simulated voltage variation against elapsed
+            monitoring time.
+        </p>
+
+        <div class="data-card">
+            <div class="data-label">Monitoring Time</div>
+
+            <div
+                class="data-value"
+                id="timeDisplay"
+                aria-live="polite"
+            >
+                0 seconds
+            </div>
+        </div>
+
+        <br>
+
+        <div class="graph-wrapper">
+
+            <canvas
+                id="graph"
+                width="1100"
+                height="500"
+                role="img"
+                aria-label="Line graph showing simulated household voltage against elapsed time in seconds"
+            >
+                Your browser does not support the canvas element.
+            </canvas>
+
+        </div>
+
+        <div
+            class="graph-summary"
+            id="graphSummary"
+            aria-live="polite"
+        >
+            No monitoring data has been collected yet.
+        </div>
+
+    </section>
+
+
+    <!-- INFORMATION -->
+    <section class="card">
+
+        <h2>How the Simulation Works</h2>
+
+        <p>
+            The estimated household load is based on the number of rooms,
+            number of people, and the electrical equipment configured above.
+        </p>
+
+        <p>
+            Each equipment item contributes its configured power consumption.
+            Daily energy is estimated from power and daily usage time.
+        </p>
+
+        <p>
+            The voltage displayed by this prototype stays around a nominal
+            household voltage and changes slightly as simulated load changes.
+        </p>
+
+        <div class="warning">
+            These values are estimates generated by software. They should not
+            be used for electrical safety decisions, utility billing, equipment
+            certification, or professional electrical engineering.
+        </div>
+
+    </section>
+
+
+    <!-- PRIVACY POLICY -->
+    <section class="card legal-section" id="privacy">
+
+        <h2>Privacy Policy</h2>
+
+        <p>
+            <strong>Last updated:</strong> September 2026
+        </p>
+
+        <h3>1. Information We Collect</h3>
+
+        <p>
+            This website is designed as a client-side household voltage
+            simulation. The current version does not require an account and
+            does not request your name, password, phone number, payment
+            information, or other personal information.
+        </p>
+
+        <h3>2. Household Information</h3>
+
+        <p>
+            Room numbers, people counts, equipment names, power values, priority
+            values, and usage times entered into the simulator are used by the
+            browser to perform calculations and display the simulation.
+        </p>
+
+        <h3>3. Data Transmission</h3>
+
+        <p>
+            The current version does not send the simulator data to a server,
+            database, analytics service, advertising service, or third-party API.
+        </p>
+
+        <h3>4. Cookies and Local Storage</h3>
+
+        <p>
+            The current version does not intentionally use cookies or browser
+            local storage for tracking or profiling.
+        </p>
+
+        <h3>5. Analytics and Advertising</h3>
+
+        <p>
+            No analytics or advertising services are included in this version.
+        </p>
+
+        <h3>6. Third-Party Services</h3>
+
+        <p>
+            The current page does not intentionally embed third-party videos,
+            maps, advertising systems, tracking pixels, or external fonts.
+        </p>
+
+        <h3>7. GitHub Pages</h3>
+
+        <p>
+            If this website is hosted using GitHub Pages, GitHub may process
+            technical information associated with hosting and requests according
+            to GitHub's applicable policies.
+        </p>
+
+        <h3>8. Sensitive Information</h3>
+
+        <p>
+            Do not enter passwords, financial information, medical information,
+            government identification numbers, or other sensitive personal
+            information into this simulator.
+        </p>
+
+        <h3>9. Future Changes</h3>
+
+        <p>
+            If authentication, analytics, payments, cloud storage, databases,
+            or other services are added in the future, this privacy policy
+            should be reviewed and updated before those features are released.
+        </p>
+
+        <h3>10. Contact</h3>
+
+        <p>
+            Website owner: <strong>[Your Name / Organization]</strong><br>
+            Email: <strong>[Your Contact Email]</strong><br>
+            Address: <strong>[Your Business Address]</strong>
+        </p>
+
+        <a class="back-link" href="#home">Back to top</a>
+
+    </section>
+
+
+    <!-- TERMS -->
+    <section class="card legal-section" id="terms">
+
+        <h2>Terms and Conditions</h2>
+
+        <p>
+            <strong>Last updated:</strong> September 2026
+        </p>
+
+        <h3>1. Purpose</h3>
+
+        <p>
+            This website provides a household electrical load and voltage
+            simulation for demonstration and educational purposes.
+        </p>
+
+        <h3>2. Simulation Only</h3>
+
+        <p>
+            The displayed voltage, load, energy, and equipment values are
+            software-generated estimates. The website is not a utility meter,
+            electrical testing instrument, safety device, or certified power
+            quality measurement system.
+        </p>
+
+        <h3>3. No Safety Reliance</h3>
+
+        <p>
+            Do not use the results of this website to make electrical safety,
+            wiring, protection, installation, maintenance, or emergency
+            decisions.
+        </p>
+
+        <h3>4. User Responsibility</h3>
+
+        <p>
+            Users are responsible for using the website appropriately and for
+            verifying electrical information with suitable instruments and
+            qualified professionals where required.
+        </p>
 
-<main class="container">
+        <h3>5. Acceptable Use</h3>
+
+        <p>
+            Users must not attempt to interfere with the website, bypass
+            security controls, introduce malicious code, or use the website
+            for unlawful activity.
+        </p>
 
+        <h3>6. Availability</h3>
+
+        <p>
+            The website may be modified, updated, temporarily unavailable,
+            or discontinued without prior notice.
+        </p>
 
-<!-- HOUSEHOLD CONFIGURATION -->
+        <h3>7. Intellectual Property</h3>
 
-<section aria-labelledby="config-title">
+        <p>
+            Website code, text, design, and original assets are owned by
+            <strong>[Your Name / Organization]</strong> unless otherwise stated.
+        </p>
 
-<h2 id="config-title">
-Household Configuration
-</h2>
+        <h3>8. Contact</h3>
 
-<div class="notice" role="note">
+        <p>
+            Owner: <strong>[Your Name / Organization]</strong><br>
+            Email: <strong>[Your Contact Email]</strong>
+        </p>
 
-This is a simulation.
-It does not measure mains voltage or actual electrical consumption.
+        <h3>9. Governing Law</h3>
 
-</div>
+        <p>
+            Complete this section with the jurisdiction and governing law that
+            actually applies to the website owner and business.
+        </p>
 
+        <a class="back-link" href="#home">Back to top</a>
 
-<div class="input-row">
+    </section>
 
-<div class="input-box">
 
-<label for="rooms">
-Number of Rooms
-</label>
+    <!-- COOKIE POLICY -->
+    <section class="card legal-section" id="cookies">
 
-<input
-type="number"
-id="rooms"
-min="1"
-max="20"
-value="3"
-inputmode="numeric"
->
+        <h2>Cookie Policy</h2>
 
-</div>
+        <p>
+            <strong>Last updated:</strong> September 2026
+        </p>
 
+        <h3>1. Current Cookie Use</h3>
 
-<div class="input-box">
+        <p>
+            The current version of this website does not intentionally set
+            non-essential cookies for analytics, advertising, profiling, or
+            tracking.
+        </p>
 
-<label for="people">
-Number of People
-</label>
+        <h3>2. Local Browser Data</h3>
 
-<input
-type="number"
-id="people"
-min="1"
-max="20"
-value="4"
-inputmode="numeric"
->
+        <p>
+            The simulator currently performs its calculations in memory while
+            the page is open and does not intentionally save the configuration
+            using browser local storage.
+        </p>
 
-</div>
+        <h3>3. Cookie Consent</h3>
 
-</div>
+        <p>
+            Because this version does not use non-essential tracking cookies,
+            a separate cookie-consent banner is not included.
+        </p>
 
+        <h3>4. Future Services</h3>
 
-<button
-type="button"
-id="applyButton">
+        <p>
+            If analytics, advertising, authentication, payment services,
+            embedded content, or other technologies that use cookies are added,
+            the cookie policy and consent mechanism should be reviewed before
+            deployment.
+        </p>
 
-Apply Settings
+        <a class="back-link" href="#home">Back to top</a>
 
-</button>
+    </section>
 
 
-<div
-class="house-info"
-id="houseInfo">
+    <!-- REFUND POLICY -->
+    <section class="card legal-section" id="refund">
 
-3 rooms | 4 people
+        <h2>Refund Policy</h2>
 
-</div>
+        <p>
+            <strong>Last updated:</strong> September 2026
+        </p>
 
-</section>
+        <h3>1. Current Service</h3>
 
+        <p>
+            This website currently provides a free software demonstration and
+            does not process payments or sell subscriptions through this page.
+        </p>
 
-<!-- DATA -->
+        <h3>2. Current Refunds</h3>
 
-<section aria-labelledby="data-title">
+        <p>
+            Because no purchases are currently processed through this website,
+            there are currently no website purchases for which a refund can be
+            requested.
+        </p>
 
-<h2 id="data-title">
-Simulation Values
-</h2>
+        <h3>3. Future Paid Services</h3>
 
+        <p>
+            If paid features or services are introduced, a separate and
+            appropriate refund and cancellation policy should be published
+            before accepting payment.
+        </p>
 
-<div class="cards">
+        <h3>4. Contact</h3>
 
+        <p>
+            Support email: <strong>[Your Contact Email]</strong>
+        </p>
 
-<div class="card">
+        <a class="back-link" href="#home">Back to top</a>
 
-<h3>
-Current Voltage
-</h3>
+    </section>
 
-<div
-class="value"
-id="voltage">
 
-230.00
+    <!-- CUSTOM DOMAIN -->
+    <section class="card">
 
-</div>
+        <h2>Custom Domain</h2>
 
-<div class="unit">
-V
-</div>
+        <p>
+            The website is designed to work with a custom domain when hosted
+            through a supported hosting service.
+        </p>
 
-</div>
+        <p>
+            Replace the placeholder below with the actual domain you own:
+        </p>
 
+        <p>
+            <strong>YOUR-DOMAIN.COM</strong>
+        </p>
 
-<div class="card">
+        <p class="small">
+            Do not use this placeholder as a real domain. The DNS and hosting
+            configuration must be completed using the actual domain you control.
+        </p>
 
-<h3>
-Estimated Average Voltage
-</h3>
-
-<div
-class="value"
-id="averageVoltage">
-
-230.00
-
-</div>
-
-<div class="unit">
-V
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-Estimated Average Load
-</h3>
-
-<div
-class="value"
-id="averageLoad">
-
-2.55
-
-</div>
-
-<div class="unit">
-kW
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-Estimated Current Load
-</h3>
-
-<div
-class="value"
-id="currentLoad">
-
-2.55
-
-</div>
-
-<div class="unit">
-kW
-</div>
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- CONTROLS -->
-
-<section
-class="controls"
-aria-labelledby="controls-title">
-
-<h2 id="controls-title">
-Monitoring Controls
-</h2>
-
-
-<button
-type="button"
-class="start"
-id="startButton">
-
-Start Monitoring
-
-</button>
-
-
-<button
-type="button"
-class="stop"
-id="stopButton">
-
-Stop Monitoring
-
-</button>
-
-
-<button
-type="button"
-class="reset"
-id="resetButton">
-
-Reset
-
-</button>
-
-
-<div
-class="status stopped"
-id="status"
-role="status"
-aria-live="polite">
-
-Monitoring Stopped
-
-</div>
-
-</section>
-
-
-<!-- TIME -->
-
-<section
-class="time-box"
-aria-labelledby="time-title">
-
-<h2 id="time-title">
-Live Monitoring Time
-</h2>
-
-<div
-class="time-value"
-id="timeDisplay">
-
-0 seconds
-
-</div>
-
-</section>
-
-
-<!-- GRAPH -->
-
-<section
-aria-labelledby="graph-title">
-
-<h2 id="graph-title">
-Simulated Voltage Over Time
-</h2>
-
-<p class="small">
-
-The chart shows simulated voltage values
-for the most recent 60 seconds.
-
-</p>
-
-
-<div class="graph-wrap">
-
-<canvas
-id="graph"
-width="1100"
-height="500"
-role="img"
-aria-label="Line chart of simulated household voltage over elapsed time">
-
-</canvas>
-
-</div>
-
-
-<div
-class="graph-summary"
-id="graphSummary">
-
-No monitoring samples yet.
-
-</div>
-
-</section>
-
+    </section>
 
 </main>
 
 
-<!-- FOOTER -->
-
 <footer>
 
-<div>
-Household Voltage Monitor
-</div>
+    <div class="footer-inner">
 
-<div class="footer-links">
+        <div class="footer-links">
 
-<a href="privacy.html">
-Privacy Policy
-</a>
+            <a href="#home">
+                Home
+            </a>
 
-<a href="terms.html">
-Terms and Conditions
-</a>
+            <a href="#privacy">
+                Privacy Policy
+            </a>
 
-<a href="cookies.html">
-Cookie Policy
-</a>
+            <a href="#terms">
+                Terms and Conditions
+            </a>
 
-<a href="refund.html">
-Refund Policy
-</a>
+            <a href="#cookies">
+                Cookie Policy
+            </a>
 
-</div>
+            <a href="#refund">
+                Refund Policy
+            </a>
+
+        </div>
+
+        <p>
+            Smart Household Voltage Monitor
+        </p>
+
+        <p class="small">
+            Simulation and educational prototype. Not a certified electrical
+            measurement instrument.
+        </p>
+
+    </div>
 
 </footer>
 
 
 <script>
-
 "use strict";
 
+/*
+    Smart Household Voltage Monitor
+    Single-file static prototype.
 
-/* VARIABLES */
+    Important:
+    This application is a simulation.
+    It does not directly measure mains electricity.
+*/
+
+
+/* -----------------------------
+   Household variables
+----------------------------- */
 
 let rooms = 3;
 let people = 4;
@@ -720,10 +1194,85 @@ let timer = null;
 let running = false;
 
 
-/* HELPER */
+/* -----------------------------
+   Equipment storage
+----------------------------- */
 
-const $ = (id) => document.getElementById(id);
+let equipmentList = [];
 
+
+/* -----------------------------
+   Default equipment values
+----------------------------- */
+
+const equipmentDefaults = {
+
+    "AC": {
+        name: "Air Conditioner",
+        power: 1500,
+        time: 6
+    },
+
+    "Fan": {
+        name: "Fan",
+        power: 75,
+        time: 8
+    },
+
+    "Light": {
+        name: "Light",
+        power: 15,
+        time: 6
+    },
+
+    "TV": {
+        name: "Television",
+        power: 120,
+        time: 4
+    },
+
+    "Refrigerator": {
+        name: "Refrigerator",
+        power: 180,
+        time: 10
+    },
+
+    "Iron Box": {
+        name: "Iron Box",
+        power: 1000,
+        time: 0.5
+    },
+
+    "Washing Machine": {
+        name: "Washing Machine",
+        power: 500,
+        time: 1
+    },
+
+    "Computer": {
+        name: "Computer",
+        power: 200,
+        time: 5
+    },
+
+    "Water Heater": {
+        name: "Water Heater",
+        power: 2000,
+        time: 1
+    },
+
+    "Microwave": {
+        name: "Microwave",
+        power: 1200,
+        time: 0.5
+    }
+
+};
+
+
+/* -----------------------------
+   Helper functions
+----------------------------- */
 
 function clamp(value, min, max) {
 
@@ -735,110 +1284,702 @@ function clamp(value, min, max) {
 }
 
 
-/* CALCULATE HOUSEHOLD */
+function safeNumber(value, fallback) {
 
-function calculateHousehold() {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+        return fallback;
+    }
+
+    return number;
+
+}
+
+
+/* -----------------------------
+   Household settings
+----------------------------- */
+
+function applyHouseholdSettings() {
 
     rooms = clamp(
-        parseInt($("rooms").value, 10) || 1,
+        Math.round(
+            safeNumber(
+                document.getElementById("rooms").value,
+                3
+            )
+        ),
         1,
         20
     );
 
     people = clamp(
-        parseInt($("people").value, 10) || 1,
+        Math.round(
+            safeNumber(
+                document.getElementById("people").value,
+                4
+            )
+        ),
         1,
         20
     );
 
 
-    $("rooms").value = rooms;
-    $("people").value = people;
+    document.getElementById("rooms").value = rooms;
+
+    document.getElementById("people").value = people;
 
 
-    /*
-        Estimated load model.
+    document.getElementById("houseInfo").textContent =
+        "Household: " +
+        rooms +
+        " rooms and " +
+        people +
+        " people";
 
-        More rooms and people increase
-        the simulated electrical load.
 
-        This is NOT actual measured load.
-    */
+    updateRoomOptions();
 
-    averageLoad =
+    calculateHousehold();
+
+    drawGraph();
+
+}
+
+
+/* -----------------------------
+   Room dropdown
+----------------------------- */
+
+function updateRoomOptions() {
+
+    const roomSelect =
+        document.getElementById("equipmentRoom");
+
+    const roomNames = [
+        "Living Room",
+        "Bedroom 1",
+        "Bedroom 2",
+        "Bedroom 3",
+        "Kitchen",
+        "Bathroom",
+        "Study Room"
+    ];
+
+    roomSelect.replaceChildren();
+
+    const numberOfRooms =
+        clamp(rooms, 1, 7);
+
+
+    for (
+        let i = 0;
+        i < numberOfRooms;
+        i++
+    ) {
+
+        let roomName;
+
+        if (i === 0) {
+
+            roomName = "Living Room";
+
+        } else if (i === 1) {
+
+            roomName = "Bedroom 1";
+
+        } else if (i === 2) {
+
+            roomName = "Bedroom 2";
+
+        } else if (i === 3) {
+
+            roomName = "Bedroom 3";
+
+        } else if (i === 4) {
+
+            roomName = "Kitchen";
+
+        } else if (i === 5) {
+
+            roomName = "Bathroom";
+
+        } else {
+
+            roomName = "Study Room";
+
+        }
+
+
+        if (!roomNames.includes(roomName)) {
+            roomName = "Room " + (i + 1);
+        }
+
+
+        const option =
+            document.createElement("option");
+
+        option.value = roomName;
+
+        option.textContent = roomName;
+
+        roomSelect.appendChild(option);
+
+    }
+
+}
+
+
+/* -----------------------------
+   Equipment selection
+----------------------------- */
+
+function handleEquipmentChange() {
+
+    const type =
+        document.getElementById("equipmentType").value;
+
+    const customContainer =
+        document.getElementById(
+            "customEquipmentContainer"
+        );
+
+    const powerInput =
+        document.getElementById("power");
+
+    const timeInput =
+        document.getElementById("usageTime");
+
+    const customInput =
+        document.getElementById("customEquipment");
+
+
+    if (type === "Others") {
+
+        customContainer.classList.remove("hidden");
+
+        powerInput.value = "";
+
+        timeInput.value = "";
+
+        customInput.value = "";
+
+        customInput.focus();
+
+        return;
+    }
+
+
+    customContainer.classList.add("hidden");
+
+    customInput.value = "";
+
+
+    const preset =
+        equipmentDefaults[type];
+
+
+    if (preset) {
+
+        powerInput.value =
+            preset.power;
+
+        timeInput.value =
+            preset.time;
+
+    }
+
+}
+
+
+/* -----------------------------
+   Add equipment
+----------------------------- */
+
+function addEquipment() {
+
+    const room =
+        document.getElementById("equipmentRoom").value;
+
+    const type =
+        document.getElementById("equipmentType").value;
+
+    const priority =
+        document.getElementById("priority").value;
+
+    const power =
+        clamp(
+            safeNumber(
+                document.getElementById("power").value,
+                0
+            ),
+            1,
+            10000
+        );
+
+    const usageTime =
+        clamp(
+            safeNumber(
+                document.getElementById("usageTime").value,
+                0
+            ),
+            0,
+            24
+        );
+
+
+    let equipmentName;
+
+
+    if (type === "Others") {
+
+        equipmentName =
+            document.getElementById(
+                "customEquipment"
+            ).value.trim();
+
+
+        if (!equipmentName) {
+
+            alert(
+                "Please enter the equipment name."
+            );
+
+            return;
+        }
+
+    } else {
+
+        equipmentName =
+            equipmentDefaults[type].name;
+
+    }
+
+
+    if (
+        !Number.isFinite(power) ||
+        power <= 0
+    ) {
+
+        alert(
+            "Please enter a valid power value."
+        );
+
+        return;
+    }
+
+
+    const energy =
+        (power / 1000) *
+        usageTime;
+
+
+    equipmentList.push({
+
+        room: room,
+
+        name: equipmentName,
+
+        priority: priority,
+
+        power: power,
+
+        time: usageTime,
+
+        energy: energy
+
+    });
+
+
+    renderEquipmentTable();
+
+    calculateHousehold();
+
+
+    document.getElementById(
+        "equipmentType"
+    ).value = "Fan";
+
+
+    handleEquipmentChange();
+
+}
+
+
+/* -----------------------------
+   Remove equipment
+----------------------------- */
+
+function removeEquipment(index) {
+
+    if (
+        index < 0 ||
+        index >= equipmentList.length
+    ) {
+        return;
+    }
+
+
+    equipmentList.splice(index, 1);
+
+    renderEquipmentTable();
+
+    calculateHousehold();
+
+}
+
+
+/* -----------------------------
+   Equipment table
+----------------------------- */
+
+function renderEquipmentTable() {
+
+    const tableBody =
+        document.getElementById(
+            "equipmentTableBody"
+        );
+
+
+    tableBody.replaceChildren();
+
+
+    if (equipmentList.length === 0) {
+
+        const row =
+            document.createElement("tr");
+
+
+        const cell =
+            document.createElement("td");
+
+
+        cell.colSpan = 7;
+
+        cell.textContent =
+            "No equipment added yet.";
+
+
+        row.appendChild(cell);
+
+        tableBody.appendChild(row);
+
+        return;
+    }
+
+
+    equipmentList.forEach(
+        function(item, index) {
+
+            const row =
+                document.createElement("tr");
+
+
+            const roomCell =
+                document.createElement("td");
+
+            roomCell.textContent =
+                item.room;
+
+
+            const nameCell =
+                document.createElement("td");
+
+            nameCell.textContent =
+                item.name;
+
+
+            const priorityCell =
+                document.createElement("td");
+
+            priorityCell.textContent =
+                item.priority;
+
+
+            if (
+                item.priority === "High"
+            ) {
+
+                priorityCell.className =
+                    "priority-high";
+
+            } else if (
+                item.priority === "Medium"
+            ) {
+
+                priorityCell.className =
+                    "priority-medium";
+
+            } else {
+
+                priorityCell.className =
+                    "priority-low";
+
+            }
+
+
+            const powerCell =
+                document.createElement("td");
+
+            powerCell.textContent =
+                item.power.toFixed(0) +
+                " W";
+
+
+            const timeCell =
+                document.createElement("td");
+
+            timeCell.textContent =
+                item.time.toFixed(1) +
+                " h";
+
+
+            const energyCell =
+                document.createElement("td");
+
+            energyCell.textContent =
+                item.energy.toFixed(2) +
+                " kWh";
+
+
+            const actionCell =
+                document.createElement("td");
+
+
+            const removeButton =
+                document.createElement("button");
+
+
+            removeButton.type = "button";
+
+            removeButton.className =
+                "danger";
+
+            removeButton.textContent =
+                "Remove";
+
+
+            removeButton.addEventListener(
+                "click",
+                function() {
+
+                    removeEquipment(index);
+
+                }
+            );
+
+
+            actionCell.appendChild(
+                removeButton
+            );
+
+
+            row.appendChild(roomCell);
+
+            row.appendChild(nameCell);
+
+            row.appendChild(priorityCell);
+
+            row.appendChild(powerCell);
+
+            row.appendChild(timeCell);
+
+            row.appendChild(energyCell);
+
+            row.appendChild(actionCell);
+
+
+            tableBody.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* -----------------------------
+   Equipment calculations
+----------------------------- */
+
+function getTotalEquipmentPower() {
+
+    let total = 0;
+
+
+    equipmentList.forEach(
+        function(item) {
+
+            total += item.power;
+
+        }
+    );
+
+
+    return total;
+
+}
+
+
+function getDailyEnergy() {
+
+    let total = 0;
+
+
+    equipmentList.forEach(
+        function(item) {
+
+            total += item.energy;
+
+        }
+    );
+
+
+    return total;
+
+}
+
+
+/* -----------------------------
+   Household calculations
+----------------------------- */
+
+function calculateHousehold() {
+
+    const baseLoad =
         0.5 +
         (rooms * 0.35) +
         (people * 0.25);
 
 
-    currentLoad = averageLoad;
+    const equipmentLoad =
+        getTotalEquipmentPower() / 1000;
 
 
-    /*
-        Keep simulated voltage close
-        to the nominal 230 V level.
-    */
+    averageLoad =
+        baseLoad +
+        equipmentLoad;
+
+
+    currentLoad =
+        averageLoad;
+
 
     averageVoltage =
         230 -
         Math.min(
-            2.5,
+            4,
             averageLoad * 0.12
         );
 
 
-    voltage = averageVoltage;
+    voltage =
+        averageVoltage;
 
 
-    $("averageLoad").textContent =
-        averageLoad.toFixed(2);
+    const dailyEnergy =
+        getDailyEnergy();
 
 
-    $("currentLoad").textContent =
-        currentLoad.toFixed(2);
+    const monthlyEnergy =
+        dailyEnergy * 30;
 
 
-    $("averageVoltage").textContent =
-        averageVoltage.toFixed(2);
+    const estimatedVoltage =
+        clamp(
+            230 -
+            (getTotalEquipmentPower() * 0.001),
+            220,
+            230
+        );
 
 
-    $("voltage").textContent =
-        voltage.toFixed(2);
+    document.getElementById(
+        "averageLoad"
+    ).textContent =
+        averageLoad.toFixed(2) +
+        " kW";
 
 
-    $("houseInfo").textContent =
-        `${rooms} rooms | ${people} people`;
+    document.getElementById(
+        "currentLoad"
+    ).textContent =
+        currentLoad.toFixed(2) +
+        " kW";
+
+
+    document.getElementById(
+        "averageVoltage"
+    ).textContent =
+        averageVoltage.toFixed(1) +
+        " V";
+
+
+    document.getElementById(
+        "voltage"
+    ).textContent =
+        voltage.toFixed(1) +
+        " V";
+
+
+    document.getElementById(
+        "totalPower"
+    ).textContent =
+        getTotalEquipmentPower().toFixed(0) +
+        " W";
+
+
+    document.getElementById(
+        "dailyEnergy"
+    ).textContent =
+        dailyEnergy.toFixed(2) +
+        " kWh";
+
+
+    document.getElementById(
+        "monthlyEnergy"
+    ).textContent =
+        monthlyEnergy.toFixed(2) +
+        " kWh";
+
+
+    document.getElementById(
+        "equipmentVoltage"
+    ).textContent =
+        estimatedVoltage.toFixed(1) +
+        " V";
 
 }
 
 
-/* GENERATE LOAD */
+/* -----------------------------
+   Simulated load generation
+----------------------------- */
 
 function generateLoad() {
 
-    const variation =
-        (Math.random() - 0.5) * 0.6;
+    const randomVariation =
+        (Math.random() - 0.5) *
+        0.6;
 
 
-    currentLoad =
-        Math.max(
-            0.2,
-            averageLoad + variation
-        );
+    let simulatedLoad =
+        averageLoad +
+        randomVariation;
 
 
     if (Math.random() < 0.08) {
 
-        currentLoad +=
+        simulatedLoad +=
             0.5 +
             Math.random() * 1.2;
 
     }
 
 
-    else if (Math.random() < 0.05) {
+    if (Math.random() < 0.05) {
 
-        currentLoad -=
+        simulatedLoad -=
             0.3 +
             Math.random() * 0.5;
 
@@ -848,17 +1989,22 @@ function generateLoad() {
     currentLoad =
         Math.max(
             0.2,
-            currentLoad
+            simulatedLoad
         );
 
 
-    $("currentLoad").textContent =
-        currentLoad.toFixed(2);
+    document.getElementById(
+        "currentLoad"
+    ).textContent =
+        currentLoad.toFixed(2) +
+        " kW";
 
 }
 
 
-/* GENERATE VOLTAGE */
+/* -----------------------------
+   Simulated voltage generation
+----------------------------- */
 
 function generateVoltage() {
 
@@ -866,11 +2012,13 @@ function generateVoltage() {
 
 
     const loadEffect =
-        (currentLoad - averageLoad) * 0.15;
+        (currentLoad - averageLoad) *
+        0.15;
 
 
     const randomVariation =
-        (Math.random() - 0.5) * 0.8;
+        (Math.random() - 0.5) *
+        0.8;
 
 
     voltage =
@@ -887,96 +2035,18 @@ function generateVoltage() {
         );
 
 
-    $("voltage").textContent =
-        voltage.toFixed(2);
+    document.getElementById(
+        "voltage"
+    ).textContent =
+        voltage.toFixed(1) +
+        " V";
 
 }
 
 
-/* APPLY SETTINGS */
-
-function applySettings() {
-
-    calculateHousehold();
-
-    elapsedSeconds = 0;
-
-    data = [];
-
-    updateTime();
-
-    updateSummary();
-
-    drawGraph();
-
-}
-
-
-/* TIME */
-
-function updateTime() {
-
-    $("timeDisplay").textContent =
-        `${elapsedSeconds} second${
-            elapsedSeconds === 1
-            ? ""
-            : "s"
-        }`;
-
-}
-
-
-/* GRAPH SUMMARY */
-
-function updateSummary() {
-
-    if (data.length === 0) {
-
-        $("graphSummary").textContent =
-            "No monitoring samples yet.";
-
-        return;
-
-    }
-
-
-    const latest =
-        data[data.length - 1];
-
-
-    const values =
-        data.map(
-            point => point.voltage
-        );
-
-
-    const min =
-        Math.min(...values);
-
-
-    const max =
-        Math.max(...values);
-
-
-    $("graphSummary").textContent =
-        `Latest simulated voltage: ${
-            latest.voltage.toFixed(2)
-        } V. Observed simulated range: ${
-            min.toFixed(2)
-        } to ${
-            max.toFixed(2)
-        } V over ${
-            data.length
-        } sample${
-            data.length === 1
-            ? ""
-            : "s"
-        }.`;
-
-}
-
-
-/* START */
+/* -----------------------------
+   Start monitoring
+----------------------------- */
 
 function startMonitoring() {
 
@@ -988,58 +2058,65 @@ function startMonitoring() {
     running = true;
 
 
-    $("status").textContent =
-        "Monitoring Running";
+    document.getElementById(
+        "status"
+    ).textContent =
+        "Monitoring active";
 
 
-    $("status").className =
-        "status running";
+    document.getElementById(
+        "status"
+    ).className =
+        "status live";
 
 
     timer =
-        setInterval(() => {
+        setInterval(
+            function() {
+
+                generateVoltage();
 
 
-            generateVoltage();
+                elapsedSeconds++;
 
 
-            elapsedSeconds++;
+                data.push({
+
+                    time: elapsedSeconds,
+
+                    voltage: voltage
+
+                });
 
 
-            data.push({
+                if (data.length > 60) {
 
-                time: elapsedSeconds,
+                    data.shift();
 
-                voltage: voltage
-
-            });
+                }
 
 
-            /*
-                Keep only the latest
-                60 samples.
-            */
-
-            if (data.length > 60) {
-
-                data.shift();
-
-            }
+                document.getElementById(
+                    "timeDisplay"
+                ).textContent =
+                    elapsedSeconds +
+                    " seconds";
 
 
-            updateTime();
+                updateGraphSummary();
 
-            updateSummary();
+                drawGraph();
 
-            drawGraph();
-
-
-        }, 1000);
+            },
+            1000
+        );
 
 }
 
 
-/* STOP */
+/* -----------------------------
+   Stop monitoring
+----------------------------- */
 
 function stopMonitoring() {
 
@@ -1055,17 +2132,23 @@ function stopMonitoring() {
     running = false;
 
 
-    $("status").textContent =
-        "Monitoring Stopped";
+    document.getElementById(
+        "status"
+    ).textContent =
+        "Monitoring stopped";
 
 
-    $("status").className =
+    document.getElementById(
+        "status"
+    ).className =
         "status stopped";
 
 }
 
 
-/* RESET */
+/* -----------------------------
+   Reset monitoring
+----------------------------- */
 
 function resetMonitoring() {
 
@@ -1077,34 +2160,119 @@ function resetMonitoring() {
     data = [];
 
 
-    voltage = averageVoltage;
-
-    currentLoad = averageLoad;
-
-
-    $("voltage").textContent =
-        voltage.toFixed(2);
+    voltage =
+        averageVoltage;
 
 
-    $("currentLoad").textContent =
-        currentLoad.toFixed(2);
+    currentLoad =
+        averageLoad;
 
 
-    updateTime();
+    document.getElementById(
+        "timeDisplay"
+    ).textContent =
+        "0 seconds";
 
-    updateSummary();
+
+    document.getElementById(
+        "voltage"
+    ).textContent =
+        voltage.toFixed(1) +
+        " V";
+
+
+    document.getElementById(
+        "currentLoad"
+    ).textContent =
+        currentLoad.toFixed(2) +
+        " kW";
+
+
+    document.getElementById(
+        "graphSummary"
+    ).textContent =
+        "No monitoring data has been collected yet.";
+
 
     drawGraph();
 
 }
 
 
-/* GRAPH */
+/* -----------------------------
+   Graph summary
+----------------------------- */
+
+function updateGraphSummary() {
+
+    if (data.length === 0) {
+
+        document.getElementById(
+            "graphSummary"
+        ).textContent =
+            "No monitoring data has been collected yet.";
+
+        return;
+
+    }
+
+
+    const latest =
+        data[data.length - 1];
+
+
+    let minimum =
+        data[0].voltage;
+
+    let maximum =
+        data[0].voltage;
+
+
+    data.forEach(
+        function(point) {
+
+            minimum =
+                Math.min(
+                    minimum,
+                    point.voltage
+                );
+
+
+            maximum =
+                Math.max(
+                    maximum,
+                    point.voltage
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "graphSummary"
+    ).textContent =
+        "Latest voltage: " +
+        latest.voltage.toFixed(1) +
+        " V. " +
+        "Observed range in the displayed period: " +
+        minimum.toFixed(1) +
+        " V to " +
+        maximum.toFixed(1) +
+        " V.";
+
+}
+
+
+/* -----------------------------
+   Draw graph
+----------------------------- */
 
 function drawGraph() {
 
     const canvas =
-        $("graph");
+        document.getElementById(
+            "graph"
+        );
 
 
     const ctx =
@@ -1113,7 +2281,6 @@ function drawGraph() {
 
     const width =
         canvas.width;
-
 
     const height =
         canvas.height;
@@ -1127,29 +2294,37 @@ function drawGraph() {
     );
 
 
-    const left = 80;
+    const left =
+        80;
 
-    const right = 25;
+    const right =
+        30;
 
-    const top = 35;
+    const top =
+        40;
 
-    const bottom = 70;
+    const bottom =
+        70;
 
 
     const graphWidth =
-        width - left - right;
+        width -
+        left -
+        right;
 
 
     const graphHeight =
-        height - top - bottom;
+        height -
+        top -
+        bottom;
 
 
-    const minV = 220;
+    const minVoltage = 220;
 
-    const maxV = 240;
+    const maxVoltage = 240;
 
 
-    /* BACKGROUND */
+    /* Background */
 
     ctx.fillStyle =
         "#ffffff";
@@ -1162,35 +2337,45 @@ function drawGraph() {
     );
 
 
-    /* GRID */
-
-    ctx.strokeStyle =
-        "#d7dde5";
-
-    ctx.lineWidth = 1;
+    /* Title */
 
     ctx.fillStyle =
-        "#4b5563";
+        "#123b67";
 
     ctx.font =
-        "14px Arial";
+        "bold 20px Arial";
 
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        "Simulated Household Voltage vs Time",
+        width / 2,
+        25
+    );
+
+
+    /* Horizontal grid */
 
     for (
-        let v = minV;
-        v <= maxV;
+        let v = minVoltage;
+        v <= maxVoltage;
         v += 5
     ) {
 
         const y =
             top +
-            graphHeight -
             (
-                (v - minV) /
-                (maxV - minV)
+                (maxVoltage - v) /
+                (maxVoltage - minVoltage)
             ) *
             graphHeight;
 
+
+        ctx.strokeStyle =
+            "#dbe3eb";
+
+        ctx.lineWidth = 1;
 
         ctx.beginPath();
 
@@ -1207,59 +2392,51 @@ function drawGraph() {
         ctx.stroke();
 
 
+        ctx.fillStyle =
+            "#52606d";
+
+        ctx.font =
+            "13px Arial";
+
+        ctx.textAlign =
+            "right";
+
         ctx.fillText(
-            `${v} V`,
-            20,
-            y + 5
+            v + " V",
+            left - 10,
+            y + 4
         );
 
     }
 
 
-    /* X AXIS */
+    /* Vertical grid */
 
-    const xTicks = 6;
+    const timeMarkers = 6;
 
-
-    const startTime =
-        data.length
-        ? data[0].time
-        : 0;
-
-
-    const endTime =
-        data.length
-        ? data[data.length - 1].time
-        : 60;
+    const maxTime =
+        data.length > 0
+            ? Math.max(
+                60,
+                data[data.length - 1].time
+            )
+            : 60;
 
 
     for (
         let i = 0;
-        i <= xTicks;
+        i <= timeMarkers;
         i++
     ) {
 
-        const ratio =
-            i / xTicks;
-
-
         const x =
             left +
-            ratio *
+            (i / timeMarkers) *
             graphWidth;
 
 
-        const tickTime =
-            Math.round(
-                startTime +
-                ratio *
-                (
-                    endTime -
-                    startTime ||
-                    60
-                )
-            );
-
+        ctx.strokeStyle =
+            "#edf1f5";
 
         ctx.beginPath();
 
@@ -1270,26 +2447,44 @@ function drawGraph() {
 
         ctx.lineTo(
             x,
-            top + graphHeight
+            height - bottom
         );
 
         ctx.stroke();
 
 
+        ctx.fillStyle =
+            "#52606d";
+
+        ctx.font =
+            "13px Arial";
+
+        ctx.textAlign =
+            "center";
+
+
+        const markerTime =
+            Math.round(
+                (i / timeMarkers) *
+                maxTime
+            );
+
+
         ctx.fillText(
-            `${tickTime}s`,
-            x - 10,
-            height - 35
+            markerTime + " s",
+            x,
+            height - 40
         );
 
     }
 
 
-    /* AXES */
+    /* Axes */
 
     ctx.strokeStyle =
-        "#20242a";
+        "#34495e";
 
+    ctx.lineWidth = 2;
 
     ctx.beginPath();
 
@@ -1300,108 +2495,109 @@ function drawGraph() {
 
     ctx.lineTo(
         left,
-        top + graphHeight
+        height - bottom
     );
 
     ctx.lineTo(
         width - right,
-        top + graphHeight
+        height - bottom
     );
 
     ctx.stroke();
 
 
-    /* LABELS */
+    /* Axis labels */
 
     ctx.fillStyle =
-        "#20242a";
+        "#243b53";
 
     ctx.font =
-        "bold 15px Arial";
+        "bold 14px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        "Elapsed Time (seconds)",
+        width / 2,
+        height - 12
+    );
+
+
+    ctx.save();
+
+    ctx.translate(
+        20,
+        height / 2
+    );
+
+    ctx.rotate(
+        -Math.PI / 2
+    );
 
 
     ctx.fillText(
         "Voltage (V)",
-        10,
-        20
+        0,
+        0
     );
 
 
-    ctx.fillText(
-        "Elapsed time (seconds)",
-        width / 2 - 75,
-        height - 10
-    );
+    ctx.restore();
 
 
-    /* EMPTY GRAPH */
+    /* No data message */
 
-    if (data.length < 1) {
+    if (data.length === 0) {
 
         ctx.fillStyle =
-            "#59636e";
+            "#52606d";
 
         ctx.font =
             "16px Arial";
 
+        ctx.textAlign =
+            "center";
 
         ctx.fillText(
-            "Start monitoring to display simulated voltage samples.",
-            330,
-            250
+            "Start monitoring to display simulated voltage data.",
+            width / 2,
+            height / 2
         );
-
 
         return;
 
     }
 
 
-    /* GRAPH LINE */
-
-    const firstTime =
-        data[0].time;
-
-
-    const lastTime =
-        data[data.length - 1].time;
-
-
-    const span =
-        Math.max(
-            1,
-            lastTime - firstTime
-        );
-
+    /* Data line */
 
     ctx.strokeStyle =
-        "#173b63";
+        "#0b63ce";
 
     ctx.lineWidth = 3;
-
 
     ctx.beginPath();
 
 
     data.forEach(
-        (point, index) => {
-
+        function(point, index) {
 
             const x =
                 left +
                 (
-                    (point.time - firstTime) /
-                    span
+                    point.time /
+                    maxTime
                 ) *
                 graphWidth;
 
 
             const y =
                 top +
-                graphHeight -
                 (
-                    (point.voltage - minV) /
-                    (maxV - minV)
+                    (maxVoltage - point.voltage) /
+                    (maxVoltage - minVoltage)
                 ) *
                 graphHeight;
 
@@ -1413,9 +2609,7 @@ function drawGraph() {
                     y
                 );
 
-            }
-
-            else {
+            } else {
 
                 ctx.lineTo(
                     x,
@@ -1431,94 +2625,63 @@ function drawGraph() {
     ctx.stroke();
 
 
-    /* CURRENT POINT */
+    /* Current point */
 
-    const last =
+    const latest =
         data[data.length - 1];
 
 
-    const lastX =
+    const latestX =
         left +
         (
-            (last.time - firstTime) /
-            span
+            latest.time /
+            maxTime
         ) *
         graphWidth;
 
 
-    const lastY =
+    const latestY =
         top +
-        graphHeight -
         (
-            (last.voltage - minV) /
-            (maxV - minV)
+            (maxVoltage - latest.voltage) /
+            (maxVoltage - minVoltage)
         ) *
         graphHeight;
 
 
     ctx.fillStyle =
-        "#173b63";
-
+        "#0b63ce";
 
     ctx.beginPath();
 
-
     ctx.arc(
-        lastX,
-        lastY,
+        latestX,
+        latestY,
         5,
         0,
         Math.PI * 2
     );
-
 
     ctx.fill();
 
 }
 
 
-/* BUTTON EVENTS */
+/* -----------------------------
+   Initialize application
+----------------------------- */
 
-$("applyButton")
-    .addEventListener(
-        "click",
-        applySettings
-    );
+updateRoomOptions();
 
+handleEquipmentChange();
 
-$("startButton")
-    .addEventListener(
-        "click",
-        startMonitoring
-    );
-
-
-$("stopButton")
-    .addEventListener(
-        "click",
-        stopMonitoring
-    );
-
-
-$("resetButton")
-    .addEventListener(
-        "click",
-        resetMonitoring
-    );
-
-
-/* INITIALIZE */
+renderEquipmentTable();
 
 calculateHousehold();
-
-updateTime();
-
-updateSummary();
 
 drawGraph();
 
 </script>
 
 </body>
-
 </html>
