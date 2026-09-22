@@ -1,288 +1,1524 @@
-:root {
-  --bg: #F6F7F5;
-  --panel: #FFFFFF;
-  --ink: #14181D;
-  --ink-soft: #4B535C;
-  --border: #DCE1E6;
-  --accent: #B5651D;
-  --accent-ink: #FFFFFF;
-  --slate: #3B4A5A;
-  --danger: #A5312A;
-  --ok: #2E6B44;
-  --radius: 4px;
-  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --sans: "IBM Plex Sans", -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description"
+content="A browser-based simulation of household voltage and estimated electrical load.">
+
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<meta http-equiv="Content-Security-Policy"
+content="default-src 'self';
+script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data:;
+font-src 'self';
+connect-src 'none';
+frame-src 'none';
+object-src 'none';
+base-uri 'self';
+form-action 'self';
+upgrade-insecure-requests">
+
+<title>Household Voltage Monitor</title>
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+<style>
+
+* {
+    box-sizing: border-box;
 }
 
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.5;
+html {
+    scroll-behavior: auto;
 }
 
-a { color: var(--slate); }
-a:hover { color: var(--accent); }
-
-.topbar {
-  background: var(--ink);
-  color: #F6F7F5;
-  border-bottom: 1px solid #000;
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fa;
+    color: #20242a;
+    line-height: 1.5;
 }
 
-.topbar-inner {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 18px 20px;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px 24px;
+/* HEADER */
+
+header {
+    background: #173b63;
+    color: white;
+    padding: 28px 16px;
+    border-bottom: 4px solid #0e2a47;
 }
 
-.topbar h1 {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+header h1 {
+    margin: 0;
+    font-size: 30px;
 }
 
-.topbar nav {
-  display: flex;
-  gap: 20px;
-  font-size: 14px;
+header p {
+    margin: 7px 0 0;
+    font-size: 15px;
 }
 
-.topbar nav a {
-  color: #C7CDD3;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
-}
-
-.topbar nav a:hover,
-.topbar nav a[aria-current="page"] {
-  color: #FFFFFF;
-  border-bottom-color: var(--accent);
-}
+/* MAIN */
 
 .container {
-  max-width: 1160px;
-  margin: 28px auto 60px;
-  padding: 0 20px;
+    width: 94%;
+    max-width: 1150px;
+    margin: 24px auto;
 }
 
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 18px;
+/* SECTIONS */
+
+section {
+    background: white;
+    border: 1px solid #d7dde5;
+    border-radius: 6px;
+    padding: 22px;
+    margin-bottom: 20px;
 }
 
-.panel h2 {
-  margin: 0 0 16px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
+h2 {
+    margin: 0 0 14px;
+    font-size: 22px;
 }
+
+h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+/* NOTICE */
+
+.notice {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    margin: 14px 0;
+}
+
+/* INPUTS */
 
 .input-row {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
 }
 
-.input-box { flex: 1; min-width: 180px; }
-
-.input-box label {
-  display: block;
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin-bottom: 6px;
+.input-box {
+    flex: 1;
+    min-width: 210px;
 }
 
-.input-box input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 15px;
-  font-family: var(--mono);
-  background: #FCFCFB;
-  color: var(--ink);
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
 }
 
-.input-box input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-color: var(--accent);
+input {
+    width: 100%;
+    padding: 11px;
+    border: 2px solid #aeb8c4;
+    border-radius: 4px;
+    font-size: 16px;
+    background: white;
+    color: #20242a;
 }
+
+/* ACCESSIBILITY */
+
+input:focus,
+button:focus,
+a:focus {
+    outline: 3px solid #f2b705;
+    outline-offset: 2px;
+}
+
+/* BUTTONS */
 
 button {
-  border: 1px solid transparent;
-  padding: 10px 18px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: var(--sans);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 11px 17px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 4px;
+    background: #173b63;
+    color: white;
 }
 
-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+button:hover {
+    background: #0e2a47;
 }
 
-.btn-primary { background: var(--ink); color: #fff; }
-.btn-primary:hover { background: #000; }
+.start {
+    background: #176b3a;
+}
 
-.btn-start { background: var(--ok); color: #fff; }
-.btn-start:hover { background: #245736; }
+.start:hover {
+    background: #0f542c;
+}
 
-.btn-stop { background: var(--danger); color: #fff; }
-.btn-stop:hover { background: #862722; }
+.stop {
+    background: #9b1c1c;
+}
 
-.btn-reset { background: #fff; color: var(--ink); border-color: var(--border); }
-.btn-reset:hover { border-color: var(--ink); }
+.stop:hover {
+    background: #7d1515;
+}
 
-.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.reset {
+    background: #4b5563;
+}
+
+.reset:hover {
+    background: #374151;
+}
+
+/* HOUSE INFORMATION */
 
 .house-info {
-  margin-top: 16px;
-  padding: 12px 14px;
-  background: #FBF4EC;
-  border: 1px solid #EAD8C0;
-  border-radius: var(--radius);
-  font-family: var(--mono);
-  font-size: 14px;
-  color: #6B4419;
+    background: #edf3f8;
+    border-left: 4px solid #173b63;
+    padding: 12px;
+    margin-top: 15px;
+    font-weight: bold;
 }
 
+/* DATA CARDS */
+
 .cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
 }
 
 .card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
+    background: white;
+    border: 1px solid #d7dde5;
+    border-radius: 6px;
+    padding: 18px;
+    text-align: center;
 }
 
 .card h3 {
-  margin: 0 0 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-soft);
+    color: #4b5563;
 }
 
 .value {
-  font-family: var(--mono);
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--ink);
+    font-size: 27px;
+    font-weight: bold;
+    color: #173b63;
 }
 
 .unit {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-soft);
-  margin-top: 2px;
+    font-size: 14px;
+    color: #59636e;
 }
 
-.status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
-  font-family: var(--mono);
-  font-size: 14px;
+/* CONTROLS */
+
+.controls {
+    text-align: center;
 }
 
-.status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 8px;
-  background: var(--ink-soft);
+.status {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 12px;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
-.status.live .status-dot { background: var(--ok); }
-.status.stopped .status-dot { background: var(--danger); }
+.status.stopped {
+    background: #eef0f2;
+    color: #343a40;
+}
+
+.status.running {
+    background: #e4f4eb;
+    color: #155b32;
+}
+
+/* TIME */
+
+.time-box {
+    text-align: center;
+}
+
+.time-value {
+    font-size: 26px;
+    font-weight: bold;
+    color: #173b63;
+}
+
+/* GRAPH */
+
+.graph-wrap {
+    overflow-x: auto;
+}
 
 canvas {
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: #FCFCFB;
-  display: block;
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid #d7dde5;
+    background: white;
 }
 
-.graph-note {
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin: -8px 0 14px;
+.graph-summary {
+    margin: 12px 0 0;
+    padding: 10px;
+    background: #f8fafc;
+    border: 1px solid #d7dde5;
 }
+
+.small {
+    font-size: 13px;
+    color: #5c6670;
+}
+
+/* FOOTER */
 
 footer {
-  border-top: 1px solid var(--border);
-  margin-top: 40px;
-  padding: 20px;
+    background: #173b63;
+    color: white;
+    padding: 20px 16px;
+    text-align: center;
+    margin-top: 30px;
 }
 
-.footer-inner {
-  max-width: 1160px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--ink-soft);
+footer a {
+    color: white;
 }
 
-.footer-inner nav { display: flex; gap: 16px; }
-.footer-inner a { text-decoration: none; }
-
-.legal {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px;
-  max-width: 760px;
-  margin: 0 auto;
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 8px;
 }
 
-.legal h1 { font-size: 24px; margin-top: 0; }
-.legal h2 { font-size: 16px; margin-top: 32px; }
-.legal p, .legal li { color: var(--ink-soft); font-size: 15px; }
-.legal .updated { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+/* MOBILE */
 
-@media (max-width: 900px) {
-  .cards { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 850px) {
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
 }
 
-@media (max-width: 600px) {
-  .cards { grid-template-columns: 1fr; }
-  .legal { padding: 22px; }
+@media (max-width: 520px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    section {
+        padding: 17px;
+    }
+
+    .container {
+        width: 96%;
+    }
+
 }
+
+/* REDUCED MOTION */
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+
+    * {
+        scroll-behavior: auto !important;
+    }
+
 }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Household Voltage Monitor</h1>
+
+<p>
+Browser-based simulation of voltage and estimated household load
+</p>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- HOUSEHOLD CONFIGURATION -->
+
+<section aria-labelledby="config-title">
+
+<h2 id="config-title">
+Household Configuration
+</h2>
+
+<div class="notice" role="note">
+
+This is a simulation.
+It does not measure mains voltage or actual electrical consumption.
+
+</div>
+
+
+<div class="input-row">
+
+<div class="input-box">
+
+<label for="rooms">
+Number of Rooms
+</label>
+
+<input
+type="number"
+id="rooms"
+min="1"
+max="20"
+value="3"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="input-box">
+
+<label for="people">
+Number of People
+</label>
+
+<input
+type="number"
+id="people"
+min="1"
+max="20"
+value="4"
+inputmode="numeric"
+>
+
+</div>
+
+</div>
+
+
+<button
+type="button"
+id="applyButton">
+
+Apply Settings
+
+</button>
+
+
+<div
+class="house-info"
+id="houseInfo">
+
+3 rooms | 4 people
+
+</div>
+
+</section>
+
+
+<!-- DATA -->
+
+<section aria-labelledby="data-title">
+
+<h2 id="data-title">
+Simulation Values
+</h2>
+
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>
+Current Voltage
+</h3>
+
+<div
+class="value"
+id="voltage">
+
+230.00
+
+</div>
+
+<div class="unit">
+V
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Estimated Average Voltage
+</h3>
+
+<div
+class="value"
+id="averageVoltage">
+
+230.00
+
+</div>
+
+<div class="unit">
+V
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Estimated Average Load
+</h3>
+
+<div
+class="value"
+id="averageLoad">
+
+2.55
+
+</div>
+
+<div class="unit">
+kW
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Estimated Current Load
+</h3>
+
+<div
+class="value"
+id="currentLoad">
+
+2.55
+
+</div>
+
+<div class="unit">
+kW
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- CONTROLS -->
+
+<section
+class="controls"
+aria-labelledby="controls-title">
+
+<h2 id="controls-title">
+Monitoring Controls
+</h2>
+
+
+<button
+type="button"
+class="start"
+id="startButton">
+
+Start Monitoring
+
+</button>
+
+
+<button
+type="button"
+class="stop"
+id="stopButton">
+
+Stop Monitoring
+
+</button>
+
+
+<button
+type="button"
+class="reset"
+id="resetButton">
+
+Reset
+
+</button>
+
+
+<div
+class="status stopped"
+id="status"
+role="status"
+aria-live="polite">
+
+Monitoring Stopped
+
+</div>
+
+</section>
+
+
+<!-- TIME -->
+
+<section
+class="time-box"
+aria-labelledby="time-title">
+
+<h2 id="time-title">
+Live Monitoring Time
+</h2>
+
+<div
+class="time-value"
+id="timeDisplay">
+
+0 seconds
+
+</div>
+
+</section>
+
+
+<!-- GRAPH -->
+
+<section
+aria-labelledby="graph-title">
+
+<h2 id="graph-title">
+Simulated Voltage Over Time
+</h2>
+
+<p class="small">
+
+The chart shows simulated voltage values
+for the most recent 60 seconds.
+
+</p>
+
+
+<div class="graph-wrap">
+
+<canvas
+id="graph"
+width="1100"
+height="500"
+role="img"
+aria-label="Line chart of simulated household voltage over elapsed time">
+
+</canvas>
+
+</div>
+
+
+<div
+class="graph-summary"
+id="graphSummary">
+
+No monitoring samples yet.
+
+</div>
+
+</section>
+
+
+</main>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+<div>
+Household Voltage Monitor
+</div>
+
+<div class="footer-links">
+
+<a href="privacy.html">
+Privacy Policy
+</a>
+
+<a href="terms.html">
+Terms and Conditions
+</a>
+
+<a href="cookies.html">
+Cookie Policy
+</a>
+
+<a href="refund.html">
+Refund Policy
+</a>
+
+</div>
+
+</footer>
+
+
+<script>
+
+"use strict";
+
+
+/* VARIABLES */
+
+let rooms = 3;
+let people = 4;
+
+let averageLoad = 0;
+let currentLoad = 0;
+
+let averageVoltage = 230;
+let voltage = 230;
+
+let elapsedSeconds = 0;
+
+let data = [];
+
+let timer = null;
+
+let running = false;
+
+
+/* HELPER */
+
+const $ = (id) => document.getElementById(id);
+
+
+function clamp(value, min, max) {
+
+    return Math.min(
+        max,
+        Math.max(min, value)
+    );
+
+}
+
+
+/* CALCULATE HOUSEHOLD */
+
+function calculateHousehold() {
+
+    rooms = clamp(
+        parseInt($("rooms").value, 10) || 1,
+        1,
+        20
+    );
+
+    people = clamp(
+        parseInt($("people").value, 10) || 1,
+        1,
+        20
+    );
+
+
+    $("rooms").value = rooms;
+    $("people").value = people;
+
+
+    /*
+        Estimated load model.
+
+        More rooms and people increase
+        the simulated electrical load.
+
+        This is NOT actual measured load.
+    */
+
+    averageLoad =
+        0.5 +
+        (rooms * 0.35) +
+        (people * 0.25);
+
+
+    currentLoad = averageLoad;
+
+
+    /*
+        Keep simulated voltage close
+        to the nominal 230 V level.
+    */
+
+    averageVoltage =
+        230 -
+        Math.min(
+            2.5,
+            averageLoad * 0.12
+        );
+
+
+    voltage = averageVoltage;
+
+
+    $("averageLoad").textContent =
+        averageLoad.toFixed(2);
+
+
+    $("currentLoad").textContent =
+        currentLoad.toFixed(2);
+
+
+    $("averageVoltage").textContent =
+        averageVoltage.toFixed(2);
+
+
+    $("voltage").textContent =
+        voltage.toFixed(2);
+
+
+    $("houseInfo").textContent =
+        `${rooms} rooms | ${people} people`;
+
+}
+
+
+/* GENERATE LOAD */
+
+function generateLoad() {
+
+    const variation =
+        (Math.random() - 0.5) * 0.6;
+
+
+    currentLoad =
+        Math.max(
+            0.2,
+            averageLoad + variation
+        );
+
+
+    if (Math.random() < 0.08) {
+
+        currentLoad +=
+            0.5 +
+            Math.random() * 1.2;
+
+    }
+
+
+    else if (Math.random() < 0.05) {
+
+        currentLoad -=
+            0.3 +
+            Math.random() * 0.5;
+
+    }
+
+
+    currentLoad =
+        Math.max(
+            0.2,
+            currentLoad
+        );
+
+
+    $("currentLoad").textContent =
+        currentLoad.toFixed(2);
+
+}
+
+
+/* GENERATE VOLTAGE */
+
+function generateVoltage() {
+
+    generateLoad();
+
+
+    const loadEffect =
+        (currentLoad - averageLoad) * 0.15;
+
+
+    const randomVariation =
+        (Math.random() - 0.5) * 0.8;
+
+
+    voltage =
+        averageVoltage -
+        loadEffect +
+        randomVariation;
+
+
+    voltage =
+        clamp(
+            voltage,
+            220,
+            240
+        );
+
+
+    $("voltage").textContent =
+        voltage.toFixed(2);
+
+}
+
+
+/* APPLY SETTINGS */
+
+function applySettings() {
+
+    calculateHousehold();
+
+    elapsedSeconds = 0;
+
+    data = [];
+
+    updateTime();
+
+    updateSummary();
+
+    drawGraph();
+
+}
+
+
+/* TIME */
+
+function updateTime() {
+
+    $("timeDisplay").textContent =
+        `${elapsedSeconds} second${
+            elapsedSeconds === 1
+            ? ""
+            : "s"
+        }`;
+
+}
+
+
+/* GRAPH SUMMARY */
+
+function updateSummary() {
+
+    if (data.length === 0) {
+
+        $("graphSummary").textContent =
+            "No monitoring samples yet.";
+
+        return;
+
+    }
+
+
+    const latest =
+        data[data.length - 1];
+
+
+    const values =
+        data.map(
+            point => point.voltage
+        );
+
+
+    const min =
+        Math.min(...values);
+
+
+    const max =
+        Math.max(...values);
+
+
+    $("graphSummary").textContent =
+        `Latest simulated voltage: ${
+            latest.voltage.toFixed(2)
+        } V. Observed simulated range: ${
+            min.toFixed(2)
+        } to ${
+            max.toFixed(2)
+        } V over ${
+            data.length
+        } sample${
+            data.length === 1
+            ? ""
+            : "s"
+        }.`;
+
+}
+
+
+/* START */
+
+function startMonitoring() {
+
+    if (running) {
+        return;
+    }
+
+
+    running = true;
+
+
+    $("status").textContent =
+        "Monitoring Running";
+
+
+    $("status").className =
+        "status running";
+
+
+    timer =
+        setInterval(() => {
+
+
+            generateVoltage();
+
+
+            elapsedSeconds++;
+
+
+            data.push({
+
+                time: elapsedSeconds,
+
+                voltage: voltage
+
+            });
+
+
+            /*
+                Keep only the latest
+                60 samples.
+            */
+
+            if (data.length > 60) {
+
+                data.shift();
+
+            }
+
+
+            updateTime();
+
+            updateSummary();
+
+            drawGraph();
+
+
+        }, 1000);
+
+}
+
+
+/* STOP */
+
+function stopMonitoring() {
+
+    if (timer !== null) {
+
+        clearInterval(timer);
+
+        timer = null;
+
+    }
+
+
+    running = false;
+
+
+    $("status").textContent =
+        "Monitoring Stopped";
+
+
+    $("status").className =
+        "status stopped";
+
+}
+
+
+/* RESET */
+
+function resetMonitoring() {
+
+    stopMonitoring();
+
+
+    elapsedSeconds = 0;
+
+    data = [];
+
+
+    voltage = averageVoltage;
+
+    currentLoad = averageLoad;
+
+
+    $("voltage").textContent =
+        voltage.toFixed(2);
+
+
+    $("currentLoad").textContent =
+        currentLoad.toFixed(2);
+
+
+    updateTime();
+
+    updateSummary();
+
+    drawGraph();
+
+}
+
+
+/* GRAPH */
+
+function drawGraph() {
+
+    const canvas =
+        $("graph");
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    const width =
+        canvas.width;
+
+
+    const height =
+        canvas.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const left = 80;
+
+    const right = 25;
+
+    const top = 35;
+
+    const bottom = 70;
+
+
+    const graphWidth =
+        width - left - right;
+
+
+    const graphHeight =
+        height - top - bottom;
+
+
+    const minV = 220;
+
+    const maxV = 240;
+
+
+    /* BACKGROUND */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        "#d7dde5";
+
+    ctx.lineWidth = 1;
+
+    ctx.fillStyle =
+        "#4b5563";
+
+    ctx.font =
+        "14px Arial";
+
+
+    for (
+        let v = minV;
+        v <= maxV;
+        v += 5
+    ) {
+
+        const y =
+            top +
+            graphHeight -
+            (
+                (v - minV) /
+                (maxV - minV)
+            ) *
+            graphHeight;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            left,
+            y
+        );
+
+        ctx.lineTo(
+            width - right,
+            y
+        );
+
+        ctx.stroke();
+
+
+        ctx.fillText(
+            `${v} V`,
+            20,
+            y + 5
+        );
+
+    }
+
+
+    /* X AXIS */
+
+    const xTicks = 6;
+
+
+    const startTime =
+        data.length
+        ? data[0].time
+        : 0;
+
+
+    const endTime =
+        data.length
+        ? data[data.length - 1].time
+        : 60;
+
+
+    for (
+        let i = 0;
+        i <= xTicks;
+        i++
+    ) {
+
+        const ratio =
+            i / xTicks;
+
+
+        const x =
+            left +
+            ratio *
+            graphWidth;
+
+
+        const tickTime =
+            Math.round(
+                startTime +
+                ratio *
+                (
+                    endTime -
+                    startTime ||
+                    60
+                )
+            );
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            top
+        );
+
+        ctx.lineTo(
+            x,
+            top + graphHeight
+        );
+
+        ctx.stroke();
+
+
+        ctx.fillText(
+            `${tickTime}s`,
+            x - 10,
+            height - 35
+        );
+
+    }
+
+
+    /* AXES */
+
+    ctx.strokeStyle =
+        "#20242a";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        top
+    );
+
+    ctx.lineTo(
+        left,
+        top + graphHeight
+    );
+
+    ctx.lineTo(
+        width - right,
+        top + graphHeight
+    );
+
+    ctx.stroke();
+
+
+    /* LABELS */
+
+    ctx.fillStyle =
+        "#20242a";
+
+    ctx.font =
+        "bold 15px Arial";
+
+
+    ctx.fillText(
+        "Voltage (V)",
+        10,
+        20
+    );
+
+
+    ctx.fillText(
+        "Elapsed time (seconds)",
+        width / 2 - 75,
+        height - 10
+    );
+
+
+    /* EMPTY GRAPH */
+
+    if (data.length < 1) {
+
+        ctx.fillStyle =
+            "#59636e";
+
+        ctx.font =
+            "16px Arial";
+
+
+        ctx.fillText(
+            "Start monitoring to display simulated voltage samples.",
+            330,
+            250
+        );
+
+
+        return;
+
+    }
+
+
+    /* GRAPH LINE */
+
+    const firstTime =
+        data[0].time;
+
+
+    const lastTime =
+        data[data.length - 1].time;
+
+
+    const span =
+        Math.max(
+            1,
+            lastTime - firstTime
+        );
+
+
+    ctx.strokeStyle =
+        "#173b63";
+
+    ctx.lineWidth = 3;
+
+
+    ctx.beginPath();
+
+
+    data.forEach(
+        (point, index) => {
+
+
+            const x =
+                left +
+                (
+                    (point.time - firstTime) /
+                    span
+                ) *
+                graphWidth;
+
+
+            const y =
+                top +
+                graphHeight -
+                (
+                    (point.voltage - minV) /
+                    (maxV - minV)
+                ) *
+                graphHeight;
+
+
+            if (index === 0) {
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }
+
+            else {
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+    );
+
+
+    ctx.stroke();
+
+
+    /* CURRENT POINT */
+
+    const last =
+        data[data.length - 1];
+
+
+    const lastX =
+        left +
+        (
+            (last.time - firstTime) /
+            span
+        ) *
+        graphWidth;
+
+
+    const lastY =
+        top +
+        graphHeight -
+        (
+            (last.voltage - minV) /
+            (maxV - minV)
+        ) *
+        graphHeight;
+
+
+    ctx.fillStyle =
+        "#173b63";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        lastX,
+        lastY,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fill();
+
+}
+
+
+/* BUTTON EVENTS */
+
+$("applyButton")
+    .addEventListener(
+        "click",
+        applySettings
+    );
+
+
+$("startButton")
+    .addEventListener(
+        "click",
+        startMonitoring
+    );
+
+
+$("stopButton")
+    .addEventListener(
+        "click",
+        stopMonitoring
+    );
+
+
+$("resetButton")
+    .addEventListener(
+        "click",
+        resetMonitoring
+    );
+
+
+/* INITIALIZE */
+
+calculateHousehold();
+
+updateTime();
+
+updateSummary();
+
+drawGraph();
+
+</script>
+
+</body>
+
+</html>
